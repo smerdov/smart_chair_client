@@ -102,6 +102,8 @@ if __name__ == '__main__':
                 data_magnetometer['z'],
             ]
 
+            measurement_data = [str(value) for value in measurement_data]
+
             # result = {
             #     'datetime_now': datetime.now().isoformat(),
             #     'accel_x': data_accelerometer['x'],
