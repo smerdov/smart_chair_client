@@ -74,14 +74,19 @@ if __name__ == '__main__':
     for n_batch in range(n_batches):
 
         results_list = []
-        filename = prefix + str(n_batch)
+        filename = prefix + str(n_batch) + '.csv'
         file = open(filename, 'w')
         file.write(data_header2write)
 
         for n_measurement in range(batch_size):
             data_accelerometer = mpu9250.readAccel()
             data_gyroscope = mpu9250.readGyro()
-            data_magnetometer = mpu9250.readMagnet()
+            # data_magnetometer = mpu9250.readMagnet()
+            data_magnetometer = {
+                'x': -1,
+                'y': -1,
+                'z': -1,
+            }
 
             if verbose:
                 if (n_measurement % verbose) == 0:
