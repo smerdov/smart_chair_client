@@ -10,12 +10,11 @@ import sys
 # import joblib
 import os
 
-sys.path.append('../')  # For FaBo9Axis_MPU9250
-import FaBo9Axis_MPU9250
+
+# sys.path.append('../')  # For FaBo9Axis_MPU9250
+__version__ = '0.0.1'
 
 TIME_FORMAT = '%Y-%m-%d-%H:%M:%S.%f'
-
-mpu9250 = FaBo9Axis_MPU9250.MPU9250()
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -39,6 +38,9 @@ def get_sleep_time():
     return time2sleep
 
 if __name__ == '__main__':
+    import FaBo9Axis_MPU9250
+    mpu9250 = FaBo9Axis_MPU9250.MPU9250()
+
     args = parse_args()
 
     timestep_detect = args.timestep_detect  # timestep between measurements
