@@ -275,7 +275,7 @@ class MeasurementsThread(Thread):
                 file.write(data2write)
 
                 if self.send_data:
-                    self.socket_receiver.sendto(data2write, self.response_address)  # TODO: add number of row n
+                    self.socket_receiver.sendto(data2write.encode(), self.response_address)  # TODO: add number of row n
 
 
                 if self.stop:
