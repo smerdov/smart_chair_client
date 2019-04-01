@@ -172,13 +172,14 @@ thread = Thread()
 thread.start()
 
 
-class MeasurementsThread(ClientThread):
+class MeasurementsThread(Thread):
 
     def __init__(self,
-                 UDP_IP,
-                 channel,
-                 sensor_type,
-                 player,
+                 socket_receiver,
+                 # UDP_IP,
+                 # channel,
+                 # sensor_type,
+                 # player,
                  mpu9250,
                  timestep_detect,
                  timestep_send,
@@ -192,8 +193,8 @@ class MeasurementsThread(ClientThread):
                  folder,
                  synchronize_time,
                  ):
-        super().__init__(UDP_IP, channel, sensor_type, player)
-
+        # super().__init__(UDP_IP, channel, sensor_type, player)
+        self.socket_receiver = socket_receiver
 
         self.timestep_detect = timestep_detect
         self.timestep_send = timestep_send
@@ -310,12 +311,13 @@ synchronize_time = args.synchronize_time
 
 # mpu9250 = None  # Temporary solution
 
-def get_measurements_thread():
+def get_measurements_thread(socket_receiver):
     measurements_thread = MeasurementsThread(
-        UDP_IP,
-        '3',
-        '07',
-        '1',
+        socket_receiver,
+        # UDP_IP,
+        # '3',
+        # '07',
+        # '1',
         mpu9250,
         timestep_detect,
         timestep_send,
@@ -341,6 +343,7 @@ def stop_measurements(measurements_thread):
     else:
         measurements_thread.stop_measurements()
         measurements_thread.join()
+        print('Measurements thread is killed')
 
 
 def time_sync(time_sync_source):
@@ -356,6 +359,7 @@ class CmdThread(ClientThread):
 
     def run(self):
         measurements_thread = None
+
         time_sync_source = 'ntp1.stratum1.ru'
         current_state = 'non_itinialized'
 
@@ -376,8 +380,11 @@ class CmdThread(ClientThread):
                 pass
             elif msg_num == 2:  # Start
                 # RuntimeError: threads can only be started once
-                measurements_thread = get_measurements_thread()
+                measurements_thread.stop = False
+                measurements_thread = get_measurements_thread(socket_receiver=self.socket_receiver)
+                # measurements_thread = get_measurements_thread()
                 measurements_thread.start()
+
                 print('I am measuring')
             elif msg_num == 3:  # Stop
                 stop_measurements(measurements_thread)
