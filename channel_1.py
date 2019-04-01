@@ -159,7 +159,7 @@ class TimeThread(ClientThread):
         return repr
 
 
-print('ending TimeThread')
+print('starting TimeThread')
 time_thread = TimeThread(
     UDP_IP=UDP_IP,
     channel='2',
@@ -208,11 +208,12 @@ class MeasurementsThread(ClientThread):
 
         self.stop = False  # Stop variable
 
-        os.mkdir('../data/' + folder)  # Here we will store data in batches
-
-
         self.batch_size = int(timestep_send / timestep_detect)  # Количество измерений в одном файле
         self.n_batches = int(max_time / timestep_send)  # Количество отправок
+
+    def stop_measurements(self):
+        self.stop = True
+        print('Stopping')
 
     def run(self):
         if self.folder is None:
@@ -221,6 +222,8 @@ class MeasurementsThread(ClientThread):
             folder = self.folder
 
         prefix = '../data/' + folder + '/'
+        # os.mkdir('../data/' + folder)  # Here we will store data in batches
+        os.mkdir(prefix)  # Here we will store data in batches
         data_header = ['datetime_now', 'acc_x', 'acc_y', 'acc_z', 'gyro_x', 'gyro_y', 'gyro_z', 'mag_x', 'mag_y',
                        'mag_z']
         data_header2write = ','.join(data_header) + '\n'
@@ -326,8 +329,9 @@ if __name__ == '__main__':
     )
 
     measurements_thread.start()
-    measurements_thread._stop()
-
+    time.sleep(5)
+    print('Trying to stop')
+    measurements_thread.stop()
     measurements_thread.join()
 
 
