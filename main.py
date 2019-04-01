@@ -355,6 +355,10 @@ class CmdThread(ClientThread):
         super().__init__(UDP_IP, channel, sensor_type, player)
 
     def run(self):
+        measurements_thread = None
+        time_sync_source = 'ntp1.stratum1.ru'
+        current_state = 'non_itinialized'
+
         while True:
             msg, addr = self.socket_receiver.recvfrom(1024)  # buffer size is 1024 bytes
             msg = msg.decode()
@@ -366,20 +370,17 @@ class CmdThread(ClientThread):
             msg_parts = msg.split(',')
             msg_num = int(msg_parts[0])
 
-            measurements_thread = {}
-            time_sync_source = 'ntp1.stratum1.ru'
-            current_state = 'non_itinialized'
 
             # TODO: add acknownledgement responses
             if msg_num == 1:  # Reset
                 pass
             elif msg_num == 2:  # Start
                 # RuntimeError: threads can only be started once
-                measurements_thread['thread'] = get_measurements_thread()
-                measurements_thread['thread'].start()
+                measurements_thread = get_measurements_thread()
+                measurements_thread.start()
                 print('I am measuring')
             elif msg_num == 3:  # Stop
-                stop_measurements(measurements_thread['thread'])
+                stop_measurements(measurements_thread)
             elif msg_num == 4:  # Time sync
                 thread = Thread(target=time_sync, args=(time_sync_source, ))
                 thread.start()
