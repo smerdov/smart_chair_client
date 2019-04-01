@@ -329,9 +329,11 @@ if __name__ == '__main__':
     )
 
     measurements_thread.start()
-    time.sleep(5)
+    time.sleep(3)
+    print('I am doing other stuff')
+    time.sleep(3)
     print('Trying to stop')
-    measurements_thread.stop()
+    measurements_thread.stop_measurements()
     measurements_thread.join()
 
 
