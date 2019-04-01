@@ -366,7 +366,7 @@ class CmdThread(ClientThread):
             msg_parts = msg.split(',')
             msg_num = int(msg_parts[0])
 
-            measurements_thread = None
+            measurements_thread = {}
             time_sync_source = 'ntp1.stratum1.ru'
             current_state = 'non_itinialized'
 
@@ -375,11 +375,11 @@ class CmdThread(ClientThread):
                 pass
             elif msg_num == 2:  # Start
                 # RuntimeError: threads can only be started once
-                measurements_thread = get_measurements_thread()
-                measurements_thread.start()
+                measurements_thread['thread'] = get_measurements_thread()
+                measurements_thread['thread'].start()
                 print('I am measuring')
             elif msg_num == 3:  # Stop
-                stop_measurements(measurements_thread)
+                stop_measurements(measurements_thread['thread'])
             elif msg_num == 4:  # Time sync
                 thread = Thread(target=time_sync, args=(time_sync_source, ))
                 thread.start()
