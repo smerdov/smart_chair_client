@@ -397,8 +397,10 @@ class CmdThread(ClientThread):
 
 
 if __name__ == '__main__':
-
-
+    cmd_thread = CmdThread(UDP_IP=UDP_IP, channel='4', sensor_type='07', player='0')
+    print('Starting cmd_thread')
+    cmd_thread.start()
+    print('cmd_thread is started')
 
 
 
