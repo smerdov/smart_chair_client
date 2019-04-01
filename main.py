@@ -193,6 +193,7 @@ class MeasurementsThread(Thread):
                  folder,
                  synchronize_time,
                  ):
+        super().__init__()
         # super().__init__(UDP_IP, channel, sensor_type, player)
         self.socket_receiver = socket_receiver
 
