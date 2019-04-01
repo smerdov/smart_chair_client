@@ -109,13 +109,14 @@ class StatusThread(ClientThread):
 
         return response_msg
 
-
+print('starting StatusThread')
 status_thread = StatusThread(
     UDP_IP=UDP_IP,
     channel='1',
     sensor_type='07',
     player='1',
 )
+print('ending StatusThread')
 
 status_thread['version'] = __version__
 status_thread['sensor_name'] = 'smartchair'
@@ -158,13 +159,14 @@ class TimeThread(ClientThread):
         return repr
 
 
-
+print('ending TimeThread')
 time_thread = TimeThread(
     UDP_IP=UDP_IP,
     channel='2',
     sensor_type='07',
     player='1',
 )
+print('ending TimeThread')
 
 thread = Thread()
 thread.start()
