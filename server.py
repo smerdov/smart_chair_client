@@ -28,7 +28,8 @@ UDP_PORT_SEND = port_client
 socket_receiver = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 socket_receiver.bind((ip_server, port_server))
 
-msg = '2'
+msg = '3'
 socket_receiver.sendto(msg.encode(), (ip_client, port_client))
+
 
 

@@ -176,6 +176,7 @@ class MeasurementsThread(Thread):
 
     def __init__(self,
                  socket_receiver,
+                 response_address,
                  # UDP_IP,
                  # channel,
                  # sensor_type,
@@ -196,6 +197,7 @@ class MeasurementsThread(Thread):
         super().__init__()
         # super().__init__(UDP_IP, channel, sensor_type, player)
         self.socket_receiver = socket_receiver
+        self.response_address = response_address
 
         self.timestep_detect = timestep_detect
         self.timestep_send = timestep_send
@@ -272,6 +274,10 @@ class MeasurementsThread(Thread):
                 data2write = ','.join(measurement_data) + '\n'
                 file.write(data2write)
 
+                if self.send_data:
+                    self.socket_receiver.sendto(data2write, self.response_address)  # TODO: add number of row n
+
+
                 if self.stop:
                     break
 
@@ -311,10 +317,12 @@ folder = args.folder
 synchronize_time = args.synchronize_time
 
 # mpu9250 = None  # Temporary solution
+# response_address = None
 
-def get_measurements_thread(socket_receiver):
+def get_measurements_thread(socket_receiver, response_address):
     measurements_thread = MeasurementsThread(
         socket_receiver,
+        response_address,
         # UDP_IP,
         # '3',
         # '07',
@@ -384,7 +392,7 @@ class CmdThread(ClientThread):
                 if (measurements_thread is not None) and measurements_thread.is_alive():
                     stop_measurements(measurements_thread)
 
-                measurements_thread = get_measurements_thread(socket_receiver=self.socket_receiver)
+                measurements_thread = get_measurements_thread(socket_receiver=self.socket_receiver, response_address)
                 # measurements_thread.stop = False
                 # measurements_thread = get_measurements_thread()
                 measurements_thread.start()
