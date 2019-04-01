@@ -9,9 +9,9 @@ import argparse
 
 
 # UDP_IP = "10.1.30.36"
-# UDP_IP = "192.168.43.154"
+UDP_IP = "192.168.43.205"
 # UDP_IP = "192.168.1.65"
-UDP_IP = "192.168.1.241"
+# UDP_IP = "192.168.1.241"
 __version__ = '0.0.1'
 
 TIME_FORMAT = '%Y-%m-%d-%H:%M:%S.%f'
