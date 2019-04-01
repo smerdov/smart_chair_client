@@ -381,6 +381,9 @@ class CmdThread(ClientThread):
                 pass
             elif msg_num == 2:  # Start
                 # RuntimeError: threads can only be started once
+                if measurements_thread.is_alive():
+                    stop_measurements(measurements_thread)
+
                 measurements_thread = get_measurements_thread(socket_receiver=self.socket_receiver)
                 # measurements_thread.stop = False
                 # measurements_thread = get_measurements_thread()
