@@ -303,11 +303,11 @@ if __name__ == '__main__':
     folder = args.folder
     synchronize_time = args.synchronize_time
 
-    mpu9250 = None  # Temporary solution
+    # mpu9250 = None  # Temporary solution
 
     measurements_thread = MeasurementsThread(
         UDP_IP,
-        '2',
+        '3',
         '07',
         '1',
         mpu9250,
