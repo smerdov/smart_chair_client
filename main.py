@@ -392,7 +392,7 @@ class CmdThread(ClientThread):
                 if (measurements_thread is not None) and measurements_thread.is_alive():
                     stop_measurements(measurements_thread)
 
-                measurements_thread = get_measurements_thread(socket_receiver=self.socket_receiver, response_address)
+                measurements_thread = get_measurements_thread(socket_receiver=self.socket_receiver, response_address=response_address)
                 # measurements_thread.stop = False
                 # measurements_thread = get_measurements_thread()
                 measurements_thread.start()
