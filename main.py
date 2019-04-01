@@ -367,7 +367,7 @@ class CmdThread(ClientThread):
             if msg_num == 1:  # Reset
                 pass
             elif msg_num == 2:  # Start
-                measurements_thread.stop = True
+                measurements_thread.stop = False
                 measurements_thread.start()
                 print('I am measuring')
             elif msg_num == 3:  # Stop
