@@ -181,6 +181,7 @@ class MeasurementsThread(ClientThread):
                  player,
                  mpu9250,
                  timestep_detect,
+                 timestep_send,
                  max_time,
                  verbose,
                  label,
@@ -195,6 +196,7 @@ class MeasurementsThread(ClientThread):
 
 
         self.timestep_detect = timestep_detect
+        self.timestep_send = timestep_send
         self.max_time = max_time
         self.verbose = verbose
         self.label = label
@@ -244,8 +246,8 @@ class MeasurementsThread(ClientThread):
                     'z': -1,
                 }
 
-                if verbose:
-                    if (n_measurement % verbose) == 0:
+                if self.verbose:
+                    if (n_measurement % self.verbose) == 0:
                         print('data_accelerometer: ', data_accelerometer)
                         print('data_gyroscope: ', data_gyroscope)
                         print('data_magnetometer: ', data_magnetometer)
@@ -289,52 +291,56 @@ class MeasurementsThread(ClientThread):
         print('---------------------------')
 
 
+import FaBo9Axis_MPU9250
+mpu9250 = FaBo9Axis_MPU9250.MPU9250()
 
-if __name__ == '__main__':
-    import FaBo9Axis_MPU9250
-    mpu9250 = FaBo9Axis_MPU9250.MPU9250()
+args = parse_args()
 
-    args = parse_args()
+timestep_detect = args.timestep_detect  # timestep between measurements
+timestep_send = args.timestep_send  #  timestep between sendings
+max_time = args.max_time  # total time of measurement
+verbose = args.verbose
+label = args.label
+person_id = args.person_id
+meta = args.meta
+send_data = args.send_data
+save_data = args.save_data
+folder = args.folder
+synchronize_time = args.synchronize_time
 
-    timestep_detect = args.timestep_detect  # timestep between measurements
-    timestep_send = args.timestep_send  #  timestep between sendings
-    max_time = args.max_time  # total time of measurement
-    verbose = args.verbose
-    label = args.label
-    person_id = args.person_id
-    meta = args.meta
-    send_data = args.send_data
-    save_data = args.save_data
-    folder = args.folder
-    synchronize_time = args.synchronize_time
+# mpu9250 = None  # Temporary solution
 
-    # mpu9250 = None  # Temporary solution
+measurements_thread = MeasurementsThread(
+    UDP_IP,
+    '3',
+    '07',
+    '1',
+    mpu9250,
+    timestep_detect,
+    timestep_send,
+    max_time,
+    verbose,
+    label,
+    person_id,
+    meta,
+    send_data,
+    save_data,
+    folder,
+    synchronize_time,
+)
 
-    measurements_thread = MeasurementsThread(
-        UDP_IP,
-        '3',
-        '07',
-        '1',
-        mpu9250,
-        timestep_detect,
-        max_time,
-        verbose,
-        label,
-        person_id,
-        meta,
-        send_data,
-        save_data,
-        folder,
-        synchronize_time,
-    )
 
-    measurements_thread.start()
-    time.sleep(3)
-    print('I am doing other stuff')
-    time.sleep(3)
+
+def stop_measurements(measurements_thread):
     print('Trying to stop')
     measurements_thread.stop_measurements()
     measurements_thread.join()
+
+
+def time_sync(time_sync_source):
+    print('Synchronizing time')
+    os.system('sudo ntpdate ' + time_sync_source)
+
 
 
 class CmdThread(ClientThread):
@@ -357,14 +363,18 @@ class CmdThread(ClientThread):
             time_sync_source = 'ntp1.stratum1.ru'
             current_state = 'non_itinialized'
 
+            # TODO: add acknownledgement responses
             if msg_num == 1:  # Reset
                 pass
             elif msg_num == 2:  # Start
-                pass  # run Measurements.py
+                measurements_thread.stop = True
+                measurements_thread.start()
+                print('I am measuring')
             elif msg_num == 3:  # Stop
-                pass  # stop Measurements.py
+                stop_measurements(measurements_thread)
             elif msg_num == 4:  # Time sync
-                pass  # os.command(time_sync_command)
+                thread = Thread(target=time_sync, args=(time_sync_source, ))
+                thread.start()
             elif msg_num == 5:  # Time sync source
                 if len(msg_parts) >= 2:
                     new_time_sync_source = msg_parts[1]
@@ -373,7 +383,7 @@ class CmdThread(ClientThread):
                     except:
                         print('Fail to set the new time_sync_source')
             elif msg_num == 6:  # Start time sending
-                pass
+                measurements_thread.send_data = True  # Double check because of name
             elif msg_num == 7:  # State
                 response_msg = current_state  # send it?
                 pass
@@ -386,6 +396,7 @@ class CmdThread(ClientThread):
 
 
 
+if __name__ == '__main__':
 
 
 
