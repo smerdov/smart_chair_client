@@ -310,31 +310,37 @@ synchronize_time = args.synchronize_time
 
 # mpu9250 = None  # Temporary solution
 
-measurements_thread = MeasurementsThread(
-    UDP_IP,
-    '3',
-    '07',
-    '1',
-    mpu9250,
-    timestep_detect,
-    timestep_send,
-    max_time,
-    verbose,
-    label,
-    person_id,
-    meta,
-    send_data,
-    save_data,
-    folder,
-    synchronize_time,
-)
+def get_measurements_thread():
+    measurements_thread = MeasurementsThread(
+        UDP_IP,
+        '3',
+        '07',
+        '1',
+        mpu9250,
+        timestep_detect,
+        timestep_send,
+        max_time,
+        verbose,
+        label,
+        person_id,
+        meta,
+        send_data,
+        save_data,
+        folder,
+        synchronize_time,
+    )
+
+    return measurements_thread
 
 
 
 def stop_measurements(measurements_thread):
     print('Trying to stop')
-    measurements_thread.stop_measurements()
-    measurements_thread.join()
+    if measurements_thread is None:
+        print('measurements_thread is None, please initialize it beforehand')
+    else:
+        measurements_thread.stop_measurements()
+        measurements_thread.join()
 
 
 def time_sync(time_sync_source):
@@ -360,6 +366,7 @@ class CmdThread(ClientThread):
             msg_parts = msg.split(',')
             msg_num = int(msg_parts[0])
 
+            measurements_thread = None
             time_sync_source = 'ntp1.stratum1.ru'
             current_state = 'non_itinialized'
 
@@ -367,7 +374,8 @@ class CmdThread(ClientThread):
             if msg_num == 1:  # Reset
                 pass
             elif msg_num == 2:  # Start
-                measurements_thread.stop = False
+                # RuntimeError: threads can only be started once
+                measurements_thread = get_measurements_thread()
                 measurements_thread.start()
                 print('I am measuring')
             elif msg_num == 3:  # Stop
