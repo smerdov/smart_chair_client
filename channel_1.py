@@ -18,7 +18,7 @@ TIME_FORMAT = '%Y-%m-%d-%H:%M:%S.%f'
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--timestep-detect', type=float, default=0.001, help='Step between measurements, s')
+    parser.add_argument('--timestep-detect', type=float, default=0.01, help='Step between measurements, s')
     parser.add_argument('--timestep-send', type=float, default=10, help='Step between sending batches, s')
     parser.add_argument('--max-time', type=float, default=12 * 60 * 60, help='Maximum measurement time, s')
     parser.add_argument('--verbose', type=int, default=0)
