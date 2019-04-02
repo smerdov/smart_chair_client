@@ -178,10 +178,11 @@ class MeasurementsThread(SocketThread):
                  socket,
                  response_address,
                  mpu9250,
-                 *args,
+                 # *args,
                  **kwargs,
                  ):
-        super().__init__(socket, *args, **kwargs)
+        # super().__init__(socket, *args, **kwargs)
+        super().__init__(socket, **kwargs)
 
         self.socket = socket
         self.response_address = response_address
