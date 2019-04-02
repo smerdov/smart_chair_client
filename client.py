@@ -69,8 +69,8 @@ print('Initializaing TimeThread done')
 
 print('Initializaing TimeThread')
 acknowledgement_thread = AcknowledgementThread(
-    addresses['server']['acknowledgement'],
-    sockets['client']['acknowledgement'],
+    addresses['server']['ack'],
+    sockets['client']['ack'],
 )
 acknowledgement_thread.start()
 print('Initializaing TimeThread done')
