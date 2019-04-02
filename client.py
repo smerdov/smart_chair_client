@@ -9,15 +9,15 @@ from config import channels_dict, ip_server, ip_client, TIME_FORMAT, __version__
 from threads import StatusThread, TimeThread, AcknowledgementThread, MeasurementsThread, CmdThread
 import FaBo9Axis_MPU9250
 
-wd = os.getcwd()  # TODO: think about ip
-if wd.startswith('/home'):  # It's RPI
-    UDP_IP = "192.168.43.205"  # For client at home
-else:  # It's Mac
-    UDP_IP = "192.168.43.154"  # For server at home
-
-# UDP_IP = "10.1.30.36"
-# UDP_IP = "192.168.1.65"
-# UDP_IP = "192.168.1.241"
+# wd = os.getcwd()  # TODO: think about ip
+# if wd.startswith('/home'):  # It's RPI
+#     UDP_IP = "192.168.43.205"  # For client at home
+# else:  # It's Mac
+#     UDP_IP = "192.168.43.154"  # For server at home
+#
+# # UDP_IP = "10.1.30.36"
+# # UDP_IP = "192.168.1.65"
+# # UDP_IP = "192.168.1.241"
 
 
 def parse_args():
@@ -40,7 +40,7 @@ def parse_args():
 
 
 # TODO: acknowledgement
-# TODO: id and port hot update
+# TODO: ip and port hot update
 
 
 if __name__ == '__main__':
@@ -84,6 +84,7 @@ if __name__ == '__main__':
         measurement_thread_kwargs,
         # *args,
         verbose=False,
+        sockets=sockets,
         # **kwargs
     )
     cmd_thread.start()

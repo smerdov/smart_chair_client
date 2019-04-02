@@ -295,6 +295,7 @@ class CmdThread(ListenerThread):
                  measurement_thread_kwargs,
                  *args,
                  verbose=False,
+                 sockets=None,
                  **kwargs):
         super().__init__(socket, *args, verbose=verbose, **kwargs)
         self.addresses = addresses
@@ -304,6 +305,7 @@ class CmdThread(ListenerThread):
         self.acknowledgement_thread = acknowledgement_thread
         self.mpu9250 = mpu9250
         self.measurement_thread_kwargs = measurement_thread_kwargs
+        self.sockets = sockets
 
     @staticmethod
     def stop_measurements(measurements_thread):
@@ -372,7 +374,7 @@ class CmdThread(ListenerThread):
                     self.stop_measurements(measurements_thread)
 
                 measurements_thread = MeasurementsThread(
-                    self.socket,
+                    self.sockets['client']['data'],  # It should be 'data' socket, right?
                     self.addresses['server']['data'],
                     self.mpu9250,
                     # **self.measurement_thread_kwargs,
@@ -418,8 +420,7 @@ class CmdThread(ListenerThread):
                 # Double check because of name
             elif msg_num == 7:  # State
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
-                self.acknowledgement_thread.send(ack_response_num)
-                response_msg = state  # send it?
+                self.acknowledgement_thread.send(ack_response_num + ',' + state)
                 pass
             elif msg_num == 8:  # Send last measurement data
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
@@ -429,6 +430,48 @@ class CmdThread(ListenerThread):
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
                 self.acknowledgement_thread.send(ack_response_num)
 
-                pass  # Set new IP and player number
+                if len(msg_parts) != 3:
+                    print('Incorrect number of parts ' + str(len(msg_parts)))
+                    continue
+
+                ip_server_new = msg_parts[1]
+                player_id_new = msg_parts[2]
+
+                ports, addresses, sockets = get_ports_adresses_sockets(ip_server_new, ip_client, channels_dict, '07', player_id_new,
+                                                                       get_server_sockets=False, get_client_sockets=True)
+
+                self.status_thread = StatusThread(
+                    addresses['server']['status'],
+                    sockets['client']['status'],
+                )
+                self.status_thread['version'] = __version__
+                self.status_thread['sensor_name'] = 'smartchair'
+                self.status_thread['support_cmd'] = '1'
+                self.status_thread['status'] = 'ok'
+                self.status_thread.start()
+
+                self.time_thread = TimeThread(
+                    addresses['server']['time'],
+                    sockets['client']['time'],
+                )
+                self.time_thread.start()
+
+                self.acknowledgement_thread = AcknowledgementThread(
+                    addresses['server']['ack'],
+                    sockets['client']['ack'],
+                )
+                self.acknowledgement_thread.start()
+
+                if measurements_thread is not None:
+                    measurements_thread.socket = sockets['client']['data']
+                    measurements_thread.response_address = addresses['server']['data']
+
+                self.addresses = addresses
+                self.sockets = sockets
+                self.socket = sockets['client']['cmd']
+
+
+                # get_socket(ip_server, ports['server'][channel_name])  # Add for client too
+
 
             msg_num_last = msg_num
