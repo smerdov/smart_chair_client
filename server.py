@@ -6,38 +6,52 @@ from _datetime import datetime
 import os
 import time
 import argparse
+from threads import SenderThread, ListenerThread, get_server_client_ports, get_socket, get_ports_adresses_sockets
+from threads import channels_dict, ip_server, ip_client
 
 
-def get_server_client_ports(channel, sensor_type, player):
-    port_server = '6' + channel + sensor_type + player
-    port_client = '60' + channel + sensor_type
-
-    return int(port_server), int(port_client)
+# # msg = '5,ntp1.stratum1.ru'
+# msg = '2'
+# socket_receiver.sendto(msg.encode(), (ip_client, port_client))
 
 
-ip_server = '192.168.43.154'
-ip_client = '192.168.43.205'
+ports, addresses, sockets = get_ports_adresses_sockets(ip_server=ip_server, ip_client=ip_client,
+    channels_dict=channels_dict, sensor_id='07', player_id='0', get_server_sockets=True, get_client_sockets=False)
 
-port_server, port_client = get_server_client_ports(channel='4', sensor_type='07', player='0')
-# UDP_PORT_RECEIVE = port_client
-# UDP_PORT_SEND = port_server
-####### REVERSED
-UDP_PORT_RECEIVE = port_server
-UDP_PORT_SEND = port_client
 
-socket_receiver = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-socket_receiver.bind((ip_server, port_server))
+### Channels 1, 2, 3, 5 are constantly listened on the server
+listened_channels = ['status', 'time', 'data', 'ack']
+threads = {}
 
-# msg = '5,ntp1.stratum1.ru'
-msg = '2'
-socket_receiver.sendto(msg.encode(), (ip_client, port_client))
 
+for channel_name in listened_channels:
+    threads[channel_name] = ListenerThread(sockets['server'][channel_name], name=channel_name)
+    threads[channel_name].start()
+
+
+threads['cmd'] = SenderThread(addresses['client']['cmd'], sockets['server']['cmd'], name='cmd')
 
 
 while True:
-    msg, addr = socket_receiver.recvfrom(1024)  # buffer size is 1024 bytes
-    msg = msg.decode()
-    print("received message:", msg)
-    print("sender:", addr)
+    msg = input('Enter a command: ')
+    threads['cmd'].send(msg)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -29,7 +29,10 @@ def parse_args():
     parser.add_argument('--person-id', type=str, default='')
     parser.add_argument('--folder', type=str, default=None)
     parser.add_argument('--synchronize-time', type=bool, default=False)
-    return parser.parse_args()
+    args = parser.parse_args()
+    args = vars(args)
+
+    return args
 
 def get_sleep_time():
     current_time = time.time()
@@ -43,17 +46,17 @@ if __name__ == '__main__':
 
     args = parse_args()
 
-    timestep_detect = args.timestep_detect  # timestep between measurements
-    timestep_send = args.timestep_send  #  timestep between sendings
-    max_time = args.max_time  # total time of measurement
-    verbose = args.verbose
-    label = args.label
-    person_id = args.person_id
-    meta = args.meta
-    send_data = args.send_data
-    save_data = args.save_data
-    folder = args.folder
-    synchronize_time = args.synchronize_time
+    timestep_detect = args['timestep_detect']  # timestep between measurements
+    timestep_send = args['timestep_send']  #  timestep between sendings
+    max_time = args['max_time']  # total time of measurement
+    verbose = args['verbose']
+    label = args['label']
+    person_id = args['person_id']
+    meta = args['meta']
+    send_data = args['send_data']
+    save_data = args['save_data']
+    folder = args['folder']
+    synchronize_time = args['synchronize_time']
 
     batch_size = int(timestep_send / timestep_detect)  # Количество измерений в одной отправке
     n_batches = int(max_time / timestep_send)  # Количество отправок
