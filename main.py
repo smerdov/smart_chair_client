@@ -427,7 +427,7 @@ class CmdThread(ClientThread):
 
             # TODO: add acknownledgement responses
             if msg_num == 1:  # Reset
-                acknowledgement_thread.respond('1', response_address)
+                acknowledgement_thread.respond(response_address, '1')
 
                 if (measurements_thread is not None) and measurements_thread.is_alive():
                     stop_measurements(measurements_thread)
@@ -437,7 +437,7 @@ class CmdThread(ClientThread):
                 time_sync_source = 'ntp1.stratum1.ru'
                 state = 'idle'
             elif msg_num == 2:  # Start
-                acknowledgement_thread.respond('2', response_address)
+                acknowledgement_thread.respond(response_address, '2')
 
                 if (measurements_thread is not None) and measurements_thread.is_alive():
                     stop_measurements(measurements_thread)
