@@ -23,8 +23,8 @@ import FaBo9Axis_MPU9250
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--timestep-detect', type=float, default=0.01, help='Step between measurements, s')
-    parser.add_argument('--timestep-send', type=float, default=10, help='Step between sending batches, s')
-    parser.add_argument('--max-time', type=float, default=12 * 60 * 60, help='Maximum measurement time, s')
+    parser.add_argument('--timestep-send', type=float, default=30, help='Step between sending batches, s')  # Actually it has different meaning now
+    parser.add_argument('--max-time', type=float, default=12 * 60 * 60, help='Maximum measurement time, s')  # 12 hours
     parser.add_argument('--verbose', type=int, default=0)
     parser.add_argument('--send-data', type=bool, default=True, help='Whether to send data to server')
     parser.add_argument('--save-data', type=bool, default=True, help='Whether to save data locally')
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     )
     status_thread['version'] = __version__
     status_thread['sensor_name'] = 'smartchair'
-    status_thread['support_cmd'] = '1'
+    status_thread['support_cmd'] = '1234579'
     status_thread['status'] = 'ok'
     status_thread.start()
 

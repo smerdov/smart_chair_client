@@ -168,6 +168,7 @@ class MeasurementsThread(SocketThread):
                  mpu9250,
                  # *args,
                  kwargs,
+                 package_num=0,
                  ):
         ### WTF??? kwargs doesn't work in the init above
         # super().__init__(socket, *args, **kwargs)
@@ -193,6 +194,7 @@ class MeasurementsThread(SocketThread):
 
         self.batch_size = int(self.timestep_send / self.timestep_detect)  # Количество измерений в одном файле
         self.n_batches = int(self.max_time / self.timestep_send)  # Количество отправок
+        self.package_num = package_num
 
     def stop_measurements(self):
         self.stop = True
@@ -217,7 +219,6 @@ class MeasurementsThread(SocketThread):
         data_header = ['datetime_now', 'acc_x', 'acc_y', 'acc_z', 'gyro_x', 'gyro_y', 'gyro_z', 'mag_x', 'mag_y',
                        'mag_z']
         data_header2write = ','.join(data_header) + '\n'
-
 
         for n_batch in range(self.n_batches):
             filename = prefix + str(n_batch) + '.csv'
@@ -258,8 +259,11 @@ class MeasurementsThread(SocketThread):
                 data2write = ','.join(measurement_data) + '\n'
                 file.write(data2write)
 
+                data2send = str(package_num) + ',' + data2write
                 if self.send_data:
-                    self.socket.sendto(data2write.encode(), self.response_address)  # TODO: add number of row n
+                    self.socket.sendto(data2send.encode(), self.response_address)  # TODO: add number of row n
+
+                package_num += 1
 
                 if self.stop:
                     break
@@ -306,14 +310,16 @@ class CmdThread(ListenerThread):
         self.mpu9250 = mpu9250
         self.measurement_thread_kwargs = measurement_thread_kwargs
         self.sockets = sockets
+        self.package_num = 0  # For measurements_thread
 
-    @staticmethod
-    def stop_measurements(measurements_thread):
+    # @staticmethod
+    def stop_measurements(self, measurements_thread):
         print('Trying to stop')
         if measurements_thread is None:
             print('measurements_thread is None, please initialize it beforehand')
         else:
             measurements_thread.stop_measurements()
+            self.package_num = measurements_thread.package_num
             measurements_thread.join()
             print('Measurements thread is killed')
 
@@ -344,7 +350,7 @@ class CmdThread(ListenerThread):
             msg = msg.decode()
             print("received message:", msg)
             print("sender:", addr)
-            sender_ip = addr[0]
+            # sender_ip = addr[0]
             # response_address = (sender_ip, self.UDP_PORT_SEND)
 
             msg_parts = msg.split(',')
@@ -379,6 +385,7 @@ class CmdThread(ListenerThread):
                     self.mpu9250,
                     # **self.measurement_thread_kwargs,
                     self.measurement_thread_kwargs,
+                    package_num=self.package_num,
                 )
                 # measurements_thread = self.get_measurements_thread(
                 #     socket=self.socket,
