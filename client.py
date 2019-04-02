@@ -109,9 +109,21 @@ print('Initializaing TimeThread done')
 
 if __name__ == '__main__':
     mpu9250 = FaBo9Axis_MPU9250.MPU9250()
-    args = parse_args()
+    measurement_thread_kwargs = parse_args()
 
-    cmd_thread = CmdThread(UDP_IP=UDP_IP, channel='4', sensor_type='07', player='0')
+    cmd_thread = CmdThread(
+        sockets['client']['cmd'],
+        addresses,
+        status_thread,
+        time_thread,
+        # measurements_thread,
+        acknowledgement_thread,
+        mpu9250,
+        measurement_thread_kwargs,
+        # *args,
+        verbose=False,
+        # **kwargs
+    )
     print('Starting cmd_thread')
     cmd_thread.start()
     print('cmd_thread is started')

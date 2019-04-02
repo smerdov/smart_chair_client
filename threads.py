@@ -305,7 +305,7 @@ class CmdThread(ListenerThread):
                  time_thread,
                  # measurements_thread,
                  acknowledgement_thread,
-                 mpu_9250,
+                 mpu9250,
                  measurement_thread_kwargs,
                  *args,
                  verbose=False,
@@ -316,7 +316,7 @@ class CmdThread(ListenerThread):
         self.time_thread = time_thread
         # self.measurements_thread = measurements_thread
         self.acknowledgement_thread = acknowledgement_thread
-        self.mpu_9250 = mpu_9250
+        self.mpu9250 = mpu9250
         self.measurement_thread_kwargs = measurement_thread_kwargs
 
     @staticmethod
@@ -329,11 +329,11 @@ class CmdThread(ListenerThread):
             measurements_thread.join()
             print('Measurements thread is killed')
 
-    # def get_measurements_thread(self, socket, response_address, mpu_9250, measurement_thread_kwargs):
+    # def get_measurements_thread(self, socket, response_address, mpu9250, measurement_thread_kwargs):
     #     measurements_thread = MeasurementsThread(
     #         socket,
     #         response_address,
-    #         mpu_9250,
+    #         mpu9250,
     #         **measurement_thread_kwargs,
     #     )
     #
@@ -381,14 +381,14 @@ class CmdThread(ListenerThread):
                 measurements_thread = MeasurementsThread(
                     self.socket,
                     self.addresses['server']['data'],
-                    self.mpu_9250,
+                    self.mpu9250,
                     # **self.measurement_thread_kwargs,
                     self.measurement_thread_kwargs,
                 )
                 # measurements_thread = self.get_measurements_thread(
                 #     socket=self.socket,
                 #     response_address=self.addresses['server']['data'],
-                #     mpu_9250=self.mpu_9250,
+                #     mpu9250=self.mpu9250,
                 #     measurement_thread_kwargs=self.measurement_thread_kwargs,
                 # )
                 # measurements_thread.stop = False
