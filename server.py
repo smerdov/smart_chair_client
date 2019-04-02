@@ -28,8 +28,16 @@ UDP_PORT_SEND = port_client
 socket_receiver = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 socket_receiver.bind((ip_server, port_server))
 
+# msg = '5,ntp1.stratum1.ru'
 msg = '2'
 socket_receiver.sendto(msg.encode(), (ip_client, port_client))
 
+
+
+while True:
+    msg, addr = socket_receiver.recvfrom(1024)  # buffer size is 1024 bytes
+    msg = msg.decode()
+    print("received message:", msg)
+    print("sender:", addr)
 
 

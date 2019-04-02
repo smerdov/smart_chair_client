@@ -9,9 +9,10 @@ import argparse
 
 
 # UDP_IP = "10.1.30.36"
-UDP_IP = "192.168.43.205"
+# UDP_IP = "192.168.43.205"  # For client at home
 # UDP_IP = "192.168.1.65"
 # UDP_IP = "192.168.1.241"
+UDP_IP = "192.168.43.154"  # For server at home
 __version__ = '0.0.1'
 
 TIME_FORMAT = '%Y-%m-%d-%H:%M:%S.%f'
@@ -124,13 +125,15 @@ status_thread['support_cmd'] = '1'
 status_thread['status'] = 'ok'
 
 status_thread.start()
+status_thread.is_alive()
 
+# del status_thread
 # status_thread.respond()
 
 
 class TimeThread(ClientThread):
 
-    def __init__(self, UDP_IP, channel, sensor_type, player, key_order=None):
+    def __init__(self, UDP_IP, channel, sensor_type, player):
         super().__init__(UDP_IP, channel, sensor_type, player)
 
     def run(self):
@@ -167,9 +170,37 @@ time_thread = TimeThread(
     player='1',
 )
 print('ending TimeThread')
+time_thread.start()
+
 
 thread = Thread()
 thread.start()
+
+class AcknowledgementThread(ClientThread):
+
+    def __init__(self, UDP_IP, channel, sensor_type, player):
+        super().__init__(UDP_IP, channel, sensor_type, player)
+
+    def run(self):
+        pass
+
+    def respond(self, response_address, response_msg):
+        self.socket_receiver.sendto(response_msg, response_address)
+
+    def __repr__(self):
+        repr = self.__class__.__name__ + '__' + super().__repr__()
+        return repr
+
+
+acknowledgement_thread = AcknowledgementThread(
+    UDP_IP=UDP_IP,
+    channel='5',
+    sensor_type='07',
+    player='1',
+)
+acknowledgement_thread.start()
+acknowledgement_thread.is_alive()
+
 
 
 class MeasurementsThread(Thread):
@@ -299,6 +330,10 @@ class MeasurementsThread(Thread):
         print('---------------------------')
 
 
+
+
+
+
 import FaBo9Axis_MPU9250
 mpu9250 = FaBo9Axis_MPU9250.MPU9250()
 
@@ -360,6 +395,10 @@ def time_sync(time_sync_source):
     os.system('sudo ntpdate ' + time_sync_source)
 
 
+# TODO: acknowledgement
+# TODO: id and port hot update
+
+
 
 class CmdThread(ClientThread):
 
@@ -370,7 +409,7 @@ class CmdThread(ClientThread):
         measurements_thread = None
 
         time_sync_source = 'ntp1.stratum1.ru'
-        current_state = 'non_itinialized'
+        state = 'idle'
 
         while True:
             msg, addr = self.socket_receiver.recvfrom(1024)  # buffer size is 1024 bytes
@@ -384,11 +423,21 @@ class CmdThread(ClientThread):
             msg_num = int(msg_parts[0])
 
 
+
             # TODO: add acknownledgement responses
             if msg_num == 1:  # Reset
-                pass
+                acknowledgement_thread.respond('1', response_address)
+
+                if (measurements_thread is not None) and measurements_thread.is_alive():
+                    stop_measurements(measurements_thread)
+
+                measurements_thread = None
+
+                time_sync_source = 'ntp1.stratum1.ru'
+                state = 'idle'
             elif msg_num == 2:  # Start
-                # RuntimeError: threads can only be started once
+                acknowledgement_thread.respond('2', response_address)
+
                 if (measurements_thread is not None) and measurements_thread.is_alive():
                     stop_measurements(measurements_thread)
 
@@ -396,10 +445,11 @@ class CmdThread(ClientThread):
                 # measurements_thread.stop = False
                 # measurements_thread = get_measurements_thread()
                 measurements_thread.start()
-
+                state = 'measuring'
                 print('I am measuring')
             elif msg_num == 3:  # Stop
                 stop_measurements(measurements_thread)
+                state = 'idle'
             elif msg_num == 4:  # Time sync
                 thread = Thread(target=time_sync, args=(time_sync_source, ))
                 thread.start()
@@ -411,9 +461,10 @@ class CmdThread(ClientThread):
                     except:
                         print('Fail to set the new time_sync_source')
             elif msg_num == 6:  # Start time sending
-                measurements_thread.send_data = True  # Double check because of name
+                pass
+                # Double check because of name
             elif msg_num == 7:  # State
-                response_msg = current_state  # send it?
+                response_msg = state  # send it?
                 pass
             elif msg_num == 8:  # Send last measurement data
                 pass
