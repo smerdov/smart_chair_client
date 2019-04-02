@@ -259,11 +259,11 @@ class MeasurementsThread(SocketThread):
                 data2write = ','.join(measurement_data) + '\n'
                 file.write(data2write)
 
-                data2send = str(package_num) + ',' + data2write
+                data2send = str(self.package_num) + ',' + data2write
                 if self.send_data:
                     self.socket.sendto(data2send.encode(), self.response_address)  # TODO: add number of row n
 
-                package_num += 1
+                self.package_num += 1
 
                 if self.stop:
                     break
