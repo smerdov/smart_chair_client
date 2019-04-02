@@ -5,7 +5,7 @@ import os
 import time
 import argparse
 from threads import SenderThread, ListenerThread, get_server_client_ports, get_socket, get_ports_adresses_sockets
-from threads import channels_dict, ip_server, ip_client, TIME_FORMAT
+from config import channels_dict, ip_server, ip_client, TIME_FORMAT, __version__
 from threads import StatusThread, TimeThread, AcknowledgementThread, MeasurementsThread, CmdThread
 import FaBo9Axis_MPU9250
 
@@ -18,8 +18,6 @@ else:  # It's Mac
 # UDP_IP = "10.1.30.36"
 # UDP_IP = "192.168.1.65"
 # UDP_IP = "192.168.1.241"
-
-__version__ = '0.0.1'
 
 
 def parse_args():
@@ -41,75 +39,39 @@ def parse_args():
     return args
 
 
-ports, addresses, sockets = get_ports_adresses_sockets(ip_server=ip_server, ip_client=ip_client,
-    channels_dict=channels_dict, sensor_id='07', player_id='0', get_server_sockets=False, get_client_sockets=True)
-
-
-print('Initializaing StatusThread')
-status_thread = StatusThread(
-    addresses['server']['status'],
-    sockets['client']['status'],
-)
-status_thread['version'] = __version__
-status_thread['sensor_name'] = 'smartchair'
-status_thread['support_cmd'] = '1'
-status_thread['status'] = 'ok'
-status_thread.start()
-print('Initializaing StatusThread done')
-
-
-print('Initializaing TimeThread')
-time_thread = TimeThread(
-    addresses['server']['time'],
-    sockets['client']['time'],
-)
-time_thread.start()
-print('Initializaing TimeThread done')
-
-
-print('Initializaing TimeThread')
-acknowledgement_thread = AcknowledgementThread(
-    addresses['server']['ack'],
-    sockets['client']['ack'],
-)
-acknowledgement_thread.start()
-print('Initializaing TimeThread done')
-
-
-
-
-
-# timestep_detect = args.timestep_detect  # timestep between measurements
-# timestep_send = args.timestep_send  #  timestep between sendings
-# max_time = args.max_time  # total time of measurement
-# verbose = args.verbose
-# label = args.label
-# person_id = args.person_id
-# meta = args.meta
-# send_data = args.send_data
-# save_data = args.save_data
-# folder = args.folder
-# synchronize_time = args.synchronize_time
-
-# mpu9250 = None  # Temporary solution
-# response_address = None
-
-
-
-
-
-
-
 # TODO: acknowledgement
 # TODO: id and port hot update
-
-
-
 
 
 if __name__ == '__main__':
     mpu9250 = FaBo9Axis_MPU9250.MPU9250()
     measurement_thread_kwargs = parse_args()
+
+    ports, addresses, sockets = get_ports_adresses_sockets(ip_server=ip_server, ip_client=ip_client,
+                                                           channels_dict=channels_dict, sensor_id='07', player_id='0',
+                                                           get_server_sockets=False, get_client_sockets=True)
+
+    status_thread = StatusThread(
+        addresses['server']['status'],
+        sockets['client']['status'],
+    )
+    status_thread['version'] = __version__
+    status_thread['sensor_name'] = 'smartchair'
+    status_thread['support_cmd'] = '1'
+    status_thread['status'] = 'ok'
+    status_thread.start()
+
+    time_thread = TimeThread(
+        addresses['server']['time'],
+        sockets['client']['time'],
+    )
+    time_thread.start()
+
+    acknowledgement_thread = AcknowledgementThread(
+        addresses['server']['ack'],
+        sockets['client']['ack'],
+    )
+    acknowledgement_thread.start()
 
     cmd_thread = CmdThread(
         sockets['client']['cmd'],
@@ -124,9 +86,8 @@ if __name__ == '__main__':
         verbose=False,
         # **kwargs
     )
-    print('Starting cmd_thread')
     cmd_thread.start()
-    print('cmd_thread is started')
+    print('Client is started')
 
 
 

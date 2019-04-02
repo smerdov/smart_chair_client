@@ -4,19 +4,8 @@ from collections import defaultdict
 from datetime import datetime
 import os
 import time
+from config import channels_dict, ip_server, ip_client, TIME_FORMAT, __version__
 
-channels_dict = {
-    'status': '1',
-    'time': '2',
-    'data': '3',
-    'cmd': '4',
-    'ack': '5',
-}
-
-ip_server = '192.168.43.154'
-ip_client = '192.168.43.205'
-
-TIME_FORMAT = '%Y-%m-%d-%H:%M:%S.%f'
 
 def get_server_client_ports(channel_id, sensor_id, player_id):
     port_server = '6' + channel_id + sensor_id + player_id
@@ -69,6 +58,7 @@ class SocketThread(Thread):
         """
         self.socket.sendto(msg.encode(), address)
 
+
 class ListenerThread(SocketThread):
 
     def __init__(self, *args, verbose=False, **kwargs):
@@ -97,7 +87,6 @@ class SenderThread(SocketThread):
             address = self.opponent_address
 
         self.socket.sendto(msg.encode(), address)
-
 
 
 class StatusThread(SenderThread):
@@ -135,7 +124,6 @@ class StatusThread(SenderThread):
             address = self.opponent_address
 
         self.socket.sendto(msg.encode(), address)
-
 
 
 class TimeThread(SenderThread):
@@ -294,8 +282,6 @@ class MeasurementsThread(SocketThread):
         print('---------------------------')
 
 
-
-
 class CmdThread(ListenerThread):
 
     def __init__(self,
@@ -349,6 +335,7 @@ class CmdThread(ListenerThread):
 
         time_sync_source = 'ntp1.stratum1.ru'
         state = 'idle'
+        msg_num_last = None
 
         while True:
             msg, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes
@@ -367,7 +354,8 @@ class CmdThread(ListenerThread):
 
             # TODO: add acknownledgement responses
             if msg_num == 1:  # Reset
-                self.acknowledgement_thread.send('1')
+                ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
+                self.acknowledgement_thread.send(ack_response_num + ',' + __version__)
 
                 if (measurements_thread is not None) and measurements_thread.is_alive():
                     self.stop_measurements(measurements_thread)
@@ -377,7 +365,8 @@ class CmdThread(ListenerThread):
                 time_sync_source = 'ntp1.stratum1.ru'
                 state = 'idle'
             elif msg_num == 2:  # Start
-                self.acknowledgement_thread.send('2')
+                ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
+                self.acknowledgement_thread.send(ack_response_num)
 
                 if (measurements_thread is not None) and measurements_thread.is_alive():
                     self.stop_measurements(measurements_thread)
@@ -401,12 +390,21 @@ class CmdThread(ListenerThread):
                 state = 'measuring'
                 print('I am measuring')
             elif msg_num == 3:  # Stop
+                ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
+                self.acknowledgement_thread.send(ack_response_num)
+
                 self.stop_measurements(measurements_thread)
                 state = 'idle'
             elif msg_num == 4:  # Time sync
+                ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
+                self.acknowledgement_thread.send(ack_response_num + ',0')
+
                 thread = Thread(target=self.time_sync, args=(time_sync_source, ))
                 thread.start()
             elif msg_num == 5:  # Time sync source
+                ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
+                self.acknowledgement_thread.send(ack_response_num)
+
                 if len(msg_parts) >= 2:
                     new_time_sync_source = msg_parts[1]
                     try:
@@ -414,12 +412,23 @@ class CmdThread(ListenerThread):
                     except:
                         print('Fail to set the new time_sync_source')
             elif msg_num == 6:  # Start time sending
-                pass
+                ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
+                self.acknowledgement_thread.send(ack_response_num)
+
                 # Double check because of name
             elif msg_num == 7:  # State
+                ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
+                self.acknowledgement_thread.send(ack_response_num)
                 response_msg = state  # send it?
                 pass
             elif msg_num == 8:  # Send last measurement data
+                ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
+                self.acknowledgement_thread.send(ack_response_num)
                 pass
             elif msg_num == 9:
+                ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
+                self.acknowledgement_thread.send(ack_response_num)
+
                 pass  # Set new IP and player number
+
+            msg_num_last = msg_num
