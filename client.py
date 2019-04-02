@@ -57,7 +57,7 @@ if __name__ == '__main__':
     )
     status_thread['version'] = __version__
     status_thread['sensor_name'] = 'smartchair'
-    status_thread['support_cmd'] = '1234579'
+    status_thread['support_cmd'] = '12345679'
     status_thread['status'] = 'ok'
     status_thread.start()
 
