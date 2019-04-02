@@ -327,15 +327,15 @@ class CmdThread(ListenerThread):
             measurements_thread.join()
             print('Measurements thread is killed')
 
-    def get_measurements_thread(self, socket, response_address, mpu_9250, measurement_thread_kwargs):
-        measurements_thread = MeasurementsThread(
-            socket,
-            response_address,
-            mpu_9250,
-            **measurement_thread_kwargs,
-        )
-
-        return measurements_thread
+    # def get_measurements_thread(self, socket, response_address, mpu_9250, measurement_thread_kwargs):
+    #     measurements_thread = MeasurementsThread(
+    #         socket,
+    #         response_address,
+    #         mpu_9250,
+    #         **measurement_thread_kwargs,
+    #     )
+    #
+    #     return measurements_thread
 
     @staticmethod
     def time_sync(time_sync_source):
