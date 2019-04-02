@@ -244,20 +244,21 @@ class MPU9250:
         y=0
         z=0
 
-        # check data ready
-        drdy = bus.read_byte_data(AK8963_SLAVE_ADDRESS, AK8963_ST1)
-        if drdy & 0x01 :
-            data = bus.read_i2c_block_data(AK8963_SLAVE_ADDRESS, AK8963_MAGNET_OUT, 7)
+        ### 3 lines below are commented by Anton to increase performance
+        # # check data ready
+        # drdy = bus.read_byte_data(AK8963_SLAVE_ADDRESS, AK8963_ST1)
+        # if drdy & 0x01 :
+        data = bus.read_i2c_block_data(AK8963_SLAVE_ADDRESS, AK8963_MAGNET_OUT, 7)
 
-            # check overflow
-            if (data[6] & 0x08)!=0x08:
-                x = self.dataConv(data[0], data[1])
-                y = self.dataConv(data[2], data[3])
-                z = self.dataConv(data[4], data[5])
+        # check overflow
+        if (data[6] & 0x08)!=0x08:
+            x = self.dataConv(data[0], data[1])
+            y = self.dataConv(data[2], data[3])
+            z = self.dataConv(data[4], data[5])
 
-                x = round(x * self.mres * self.magXcoef, 3)
-                y = round(y * self.mres * self.magYcoef, 3)
-                z = round(z * self.mres * self.magZcoef, 3)
+            x = round(x * self.mres * self.magXcoef, 3)
+            y = round(y * self.mres * self.magYcoef, 3)
+            z = round(z * self.mres * self.magZcoef, 3)
 
         return {"x":x, "y":y, "z":z}
 
