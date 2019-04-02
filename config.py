@@ -17,3 +17,4 @@ ip_server = '192.168.43.154'
 ip_client = '192.168.43.205'
 
 TIME_FORMAT = '%Y-%m-%d-%H:%M:%S.%f'
+

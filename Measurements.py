@@ -29,6 +29,7 @@ def parse_args():
     parser.add_argument('--person-id', type=str, default='')
     parser.add_argument('--folder', type=str, default=None)
     parser.add_argument('--synchronize-time', type=bool, default=False)
+    parser.add_argument('--wait', type=float, default=0)
     args = parser.parse_args()
     args = vars(args)
 
@@ -57,6 +58,9 @@ if __name__ == '__main__':
     save_data = args['save_data']
     folder = args['folder']
     synchronize_time = args['synchronize_time']
+    wait = args['wait']
+
+    time.sleep(wait)
 
     batch_size = int(timestep_send / timestep_detect)  # Количество измерений в одной отправке
     n_batches = int(max_time / timestep_send)  # Количество отправок

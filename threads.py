@@ -454,7 +454,7 @@ class CmdThread(ListenerThread):
                 self.acknowledgement_thread.send(ack_response_num)
 
                 if len(msg_parts) != 3:
-                    print('Incorrect number of parts ' + str(len(msg_parts)))
+                    print('Incorrect number of parts: ' + str(len(msg_parts)))
                     continue
 
                 ip_server_new = msg_parts[1]
