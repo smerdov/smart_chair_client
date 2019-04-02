@@ -58,9 +58,6 @@ if __name__ == '__main__':
     save_data = args['save_data']
     folder = args['folder']
     synchronize_time = args['synchronize_time']
-    wait = args['wait']
-
-    time.sleep(wait)
 
     batch_size = int(timestep_send / timestep_detect)  # Количество измерений в одной отправке
     n_batches = int(max_time / timestep_send)  # Количество отправок

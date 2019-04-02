@@ -33,6 +33,7 @@ def parse_args():
     parser.add_argument('--person-id', type=str, default='')
     parser.add_argument('--folder', type=str, default=None)
     parser.add_argument('--synchronize-time', type=bool, default=False)
+    parser.add_argument('--wait', type=float, default=0)
     args = parser.parse_args()
     args = vars(args)
 
@@ -42,6 +43,9 @@ def parse_args():
 if __name__ == '__main__':
     mpu9250 = FaBo9Axis_MPU9250.MPU9250()
     measurement_thread_kwargs = parse_args()
+
+    wait = measurement_thread_kwargs['wait']
+    time.sleep(wait)
 
     ports, addresses, sockets = get_ports_adresses_sockets(ip_server=ip_server, ip_client=ip_client,
                                                            channels_dict=channels_dict, sensor_id='07', player_id='0',
