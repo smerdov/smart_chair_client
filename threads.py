@@ -359,7 +359,11 @@ class CmdThread(ListenerThread):
             # response_address = (sender_ip, self.UDP_PORT_SEND)
 
             msg_parts = msg.split(',')
-            msg_num = int(msg_parts[0])
+            try:
+                msg_num = int(msg_parts[0])
+            except :
+                print("Can't parse msg '" + msg + "'")
+                continue
 
             # TODO: add acknownledgement responses
             if msg_num == 1:  # Reset

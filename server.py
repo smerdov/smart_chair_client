@@ -25,7 +25,7 @@ threads = {}
 
 
 for channel_name in listened_channels:
-    threads[channel_name] = ListenerThread(sockets['server'][channel_name], name=channel_name)
+    threads[channel_name] = ListenerThread(sockets['server'][channel_name], name=channel_name, verbose=True)
     threads[channel_name].start()
 
 
