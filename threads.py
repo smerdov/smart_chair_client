@@ -472,9 +472,9 @@ class CmdThread(ListenerThread):
                     measurements_thread.response_address = addresses['server']['data']
 
                 self.addresses = addresses
+                print('ip and player_id are updated to ' + ip_server_new + ' , ' + player_id_new)
                 # self.sockets = sockets
                 # self.socket = sockets['client']['cmd']
-
 
                 # get_socket(ip_server, ports['server'][channel_name])  # Add for client too
 
