@@ -179,10 +179,11 @@ class MeasurementsThread(SocketThread):
                  response_address,
                  mpu9250,
                  # *args,
-                 **kwargs,
+                 kwargs,
                  ):
+        ### WTF??? kwargs doesn't work in the init above
         # super().__init__(socket, *args, **kwargs)
-        super().__init__(socket, **kwargs)
+        super().__init__(socket)# , **kwargs)
 
         self.socket = socket
         self.response_address = response_address
@@ -381,7 +382,8 @@ class CmdThread(ListenerThread):
                     self.socket,
                     self.addresses['server']['data'],
                     self.mpu_9250,
-                    **self.measurement_thread_kwargs,
+                    # **self.measurement_thread_kwargs,
+                    self.measurement_thread_kwargs,
                 )
                 # measurements_thread = self.get_measurements_thread(
                 #     socket=self.socket,
