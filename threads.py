@@ -230,13 +230,13 @@ class MeasurementsThread(SocketThread):
             for n_measurement in range(self.batch_size):
                 data_accelerometer = self.mpu9250.readAccel()
                 data_gyroscope = self.mpu9250.readGyro()
-                # data_magnetometer = self.mpu9250.readMagnet()
+                data_magnetometer = self.mpu9250.readMagnet()
 
-                data_magnetometer = {
-                    'x': -1,
-                    'y': -1,
-                    'z': -1,
-                }
+                # data_magnetometer = {
+                #     'x': -1,
+                #     'y': -1,
+                #     'z': -1,
+                # }
 
                 if self.verbose:
                     if (n_measurement % self.verbose) == 0:
