@@ -7,12 +7,17 @@ import os
 import time
 import argparse
 
+wd = os.getcwd()
+if wd.startswith('/home'):  # It's RPI
+    UDP_IP = "192.168.43.205"  # For client at home
+else:  # It's Mac
+    UDP_IP = "192.168.43.154"  # For server at home
 
 # UDP_IP = "10.1.30.36"
-# UDP_IP = "192.168.43.205"  # For client at home
+
 # UDP_IP = "192.168.1.65"
 # UDP_IP = "192.168.1.241"
-UDP_IP = "192.168.43.154"  # For server at home
+
 __version__ = '0.0.1'
 
 TIME_FORMAT = '%Y-%m-%d-%H:%M:%S.%f'
