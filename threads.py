@@ -78,15 +78,34 @@ class ListenerThread(SocketThread):
 
 class SenderThread(SocketThread):
 
-    def __init__(self, opponent_address, *args, **kwargs):
+    def __init__(self, opponent_address, *args, period=10, **kwargs):
         super().__init__(*args, **kwargs)
         self.opponent_address = opponent_address
+        self.period = period
+        self.periodic_sending = False
 
-    def send(self, msg, address=None):
+    def __repr__(self):
+        repr = self.__class__.__name__ + '__' + super().__repr__()
+        return repr
+
+    def get_response_msg(self):
+        return 'not implemented yet'
+
+    def send(self, msg=None, address=None):
+        if msg is None:
+            msg = self.get_response_msg()
+
         if address is None:
             address = self.opponent_address
 
         self.socket.sendto(msg.encode(), address)
+
+    def run(self):
+        while True:
+            if self.periodic_sending:
+                self.send()
+
+            time.sleep(self.period)
 
 
 class StatusThread(SenderThread):
@@ -116,15 +135,6 @@ class StatusThread(SenderThread):
 
         return response_msg
 
-    def send(self, msg=None, address=None):
-        if msg is None:
-            msg = self.get_response_msg()
-
-        if address is None:
-            address = self.opponent_address
-
-        self.socket.sendto(msg.encode(), address)
-
 
 class TimeThread(SenderThread):
 
@@ -135,10 +145,6 @@ class TimeThread(SenderThread):
         response_msg = datetime.now().strftime(TIME_FORMAT)[:-3]
 
         return response_msg
-
-    def __repr__(self):
-        repr = self.__class__.__name__ + '__' + super().__repr__()
-        return repr
 
     def send(self, msg=None, address=None):
         if msg is None:
@@ -154,10 +160,7 @@ class AcknowledgementThread(SenderThread):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-    def __repr__(self):
-        repr = self.__class__.__name__ + '__' + super().__repr__()
-        return repr
+        ### That's actually the same in this form
 
 
 class MeasurementsThread(SocketThread):
@@ -259,7 +262,13 @@ class MeasurementsThread(SocketThread):
                 data2write = ','.join(measurement_data) + '\n'
                 file.write(data2write)
 
-                data2send = str(self.package_num) + ',' + data2write
+                measurement_data4server = [
+                    str(self.package_num),  # n
+                    measurement_data[0][:-3],  # microseconds are ignored
+                ] + measurement_data[1:]
+
+                # data2send = str(self.package_num) + ',' + ','.join(measurement_data)  # New line character is not added
+                data2send = ','.join(measurement_data4server)  # New line character is not added
                 if self.send_data:
                     self.socket.sendto(data2send.encode(), self.response_address)  # TODO: add number of row n
 
@@ -369,6 +378,9 @@ class CmdThread(ListenerThread):
                     self.stop_measurements(measurements_thread)
 
                 measurements_thread = None
+                self.status_thread.periodic_sending = False
+                self.time_thread.periodic_sending = False
+                self.package_num = 0
 
                 time_sync_source = 'ntp1.stratum1.ru'
                 state = 'idle'
@@ -396,6 +408,7 @@ class CmdThread(ListenerThread):
                 # measurements_thread.stop = False
                 # measurements_thread = get_measurements_thread()
                 measurements_thread.start()
+                self.status_thread.periodic_sending = True
                 state = 'measuring'
                 print('I am measuring')
             elif msg_num == 3:  # Stop
@@ -403,6 +416,7 @@ class CmdThread(ListenerThread):
                 self.acknowledgement_thread.send(ack_response_num)
 
                 self.stop_measurements(measurements_thread)
+                self.status_thread.periodic_sending = False
                 state = 'idle'
             elif msg_num == 4:  # Time sync
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
@@ -423,6 +437,8 @@ class CmdThread(ListenerThread):
             elif msg_num == 6:  # Start time sending
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
                 self.acknowledgement_thread.send(ack_response_num)
+
+                self.time_thread.periodic_sending = True
 
                 # Double check because of name
             elif msg_num == 7:  # State
