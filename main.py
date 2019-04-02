@@ -76,9 +76,9 @@ class ClientThread(Thread):
     def get_response_msg(self):
         return ''
 
-    def respond(self, response_address):
+    def respond(self, response_address, response_msg=''):
         response_msg = self.get_response_msg()
-        self.socket_receiver.sendto(response_msg, response_address)
+        self.socket_receiver.sendto(response_msg.encode(), response_address)
 
 
 class StatusThread(ClientThread):
@@ -158,10 +158,6 @@ class TimeThread(ClientThread):
 
         return response_msg
 
-    def respond(self, response_address):
-        response_msg = self.get_response_msg()
-        self.socket_receiver.sendto(response_msg, response_address)
-
     def __repr__(self):
         repr = self.__class__.__name__ + '__' + super().__repr__()
         return repr
@@ -190,7 +186,7 @@ class AcknowledgementThread(ClientThread):
         pass
 
     def respond(self, response_address, response_msg):
-        self.socket_receiver.sendto(response_msg, response_address)
+        self.socket_receiver.sendto(response_msg.encode(), response_address)
 
     def __repr__(self):
         repr = self.__class__.__name__ + '__' + super().__repr__()
