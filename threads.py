@@ -374,7 +374,7 @@ class CmdThread(ListenerThread):
                     self.stop_measurements(measurements_thread)
 
                 measurements_thread = MeasurementsThread(
-                    self.sockets['client']['data'],  # It should be 'data' socket, right?
+                    self.sockets['client']['data'],  # It should be 'data' socket, right?  # Also should be simplified
                     self.addresses['server']['data'],
                     self.mpu9250,
                     # **self.measurement_thread_kwargs,
@@ -438,23 +438,11 @@ class CmdThread(ListenerThread):
                 player_id_new = msg_parts[2]
 
                 ports, addresses, sockets = get_ports_adresses_sockets(ip_server_new, ip_client, channels_dict, '07', player_id_new,
-                                                                       get_server_sockets=False, get_client_sockets=True)
+                                                                       get_server_sockets=True, get_client_sockets=False)
 
-                self.status_thread = StatusThread(
-                    addresses['server']['status'],
-                    sockets['client']['status'],
-                )
-                self.status_thread['version'] = __version__
-                self.status_thread['sensor_name'] = 'smartchair'
-                self.status_thread['support_cmd'] = '1'
-                self.status_thread['status'] = 'ok'
-                self.status_thread.start()
-
-                self.time_thread = TimeThread(
-                    addresses['server']['time'],
-                    sockets['client']['time'],
-                )
-                self.time_thread.start()
+                self.status_thread.opponent_address = addresses['server']['status']
+                self.time_thread.opponent_address = addresses['server']['time']
+                self.acknowledgement_thread.opponent_address = addresses['server']['ack']
 
                 self.acknowledgement_thread = AcknowledgementThread(
                     addresses['server']['ack'],
@@ -463,12 +451,12 @@ class CmdThread(ListenerThread):
                 self.acknowledgement_thread.start()
 
                 if measurements_thread is not None:
-                    measurements_thread.socket = sockets['client']['data']
+                    # measurements_thread.socket = sockets['client']
                     measurements_thread.response_address = addresses['server']['data']
 
                 self.addresses = addresses
-                self.sockets = sockets
-                self.socket = sockets['client']['cmd']
+                # self.sockets = sockets
+                # self.socket = sockets['client']['cmd']
 
 
                 # get_socket(ip_server, ports['server'][channel_name])  # Add for client too
