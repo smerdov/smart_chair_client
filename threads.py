@@ -438,17 +438,11 @@ class CmdThread(ListenerThread):
                 player_id_new = msg_parts[2]
 
                 ports, addresses, sockets = get_ports_adresses_sockets(ip_server_new, ip_client, channels_dict, '07', player_id_new,
-                                                                       get_server_sockets=True, get_client_sockets=False)
+                                                                       get_server_sockets=False, get_client_sockets=False)
 
                 self.status_thread.opponent_address = addresses['server']['status']
                 self.time_thread.opponent_address = addresses['server']['time']
                 self.acknowledgement_thread.opponent_address = addresses['server']['ack']
-
-                self.acknowledgement_thread = AcknowledgementThread(
-                    addresses['server']['ack'],
-                    sockets['client']['ack'],
-                )
-                self.acknowledgement_thread.start()
 
                 if measurements_thread is not None:
                     # measurements_thread.socket = sockets['client']
