@@ -179,6 +179,7 @@ class MeasurementsThread(SocketThread):
                  response_address,
                  mpu9250,
                  *args,
+                 useless_variable=None,
                  **kwargs,
                  ):
         super().__init__(socket, *args, **kwargs)
