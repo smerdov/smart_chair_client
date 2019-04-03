@@ -216,7 +216,8 @@ class MeasurementsThread(SocketThread):
         else:
             folder = self.folder
 
-        prefix = '../data/' + folder + '/'
+        # prefix = '../data/' + folder + '/'
+        prefix = '/home/pi/data/' + folder + '/'
         # os.mkdir('../data/' + folder)  # Here we will store data in batches
         os.mkdir(prefix)  # Here we will store data in batches
         data_header = ['datetime_now', 'acc_x', 'acc_y', 'acc_z', 'gyro_x', 'gyro_y', 'gyro_z', 'mag_x', 'mag_y',
