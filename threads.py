@@ -357,10 +357,12 @@ class CmdThread(ListenerThread):
         msg_num_last = None
 
         while True:
-            msg, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes
-            msg = msg.decode()
-            print("received message:", msg)
-            print("sender:", addr)
+            time.sleep(1)
+            msg = '1'
+            # msg, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes
+            # msg = msg.decode()
+            # print("received message:", msg)
+            # print("sender:", addr)
             # sender_ip = addr[0]
             # response_address = (sender_ip, self.UDP_PORT_SEND)
 
