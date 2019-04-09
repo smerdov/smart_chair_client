@@ -359,12 +359,20 @@ class CmdThread(ListenerThread):
         while True:
             time.sleep(1)
             msg = '1'
+            UDP_PORT = 60411
+            UDP_IP = "192.168.1.236"
+
+            self.status_thread.sendto("4", (UDP_IP, UDP_PORT))
+            # print(i, time.time())
+            # time.sleep(0.1)
             # msg, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes
             # msg = msg.decode()
             # print("received message:", msg)
             # print("sender:", addr)
             # sender_ip = addr[0]
             # response_address = (sender_ip, self.UDP_PORT_SEND)
+
+            continue
 
             msg_parts = msg.split(',')
             try:
