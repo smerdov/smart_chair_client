@@ -362,7 +362,7 @@ class CmdThread(ListenerThread):
             UDP_PORT = 60411
             UDP_IP = "192.168.1.236"
 
-            self.status_thread.sendto("4", (UDP_IP, UDP_PORT))
+            self.status_thread.send("4", (UDP_IP, UDP_PORT))
             # print(i, time.time())
             # time.sleep(0.1)
             # msg, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes
