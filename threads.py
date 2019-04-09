@@ -15,7 +15,8 @@ def get_server_client_ports(channel_id, sensor_id, player_id):
 
 def get_socket(ip, port):
     socket_receiver = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    socket_receiver.bind((ip, port))
+    # socket_receiver.bind((ip, port))
+    socket_receiver.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
     return socket_receiver
 
