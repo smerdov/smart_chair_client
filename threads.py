@@ -360,7 +360,8 @@ class CmdThread(ListenerThread):
             time.sleep(1)
             msg = '1'
             UDP_PORT = 60411
-            UDP_IP = "192.168.1.236"
+            # UDP_IP = "192.168.1.236"
+            UDP_IP = "255.255.255.255"
 
             self.status_thread.send("4", (UDP_IP, UDP_PORT))
             # print(i, time.time())
