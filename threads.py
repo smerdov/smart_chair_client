@@ -40,10 +40,10 @@ def get_ports_adresses_sockets(channels_dict, sensor_id, player_id,
         # addresses['client'][channel_name] = (ip_client, ports['client'][channel_name])
 
         if channel_name == 'cmd':
-            ip_server = '<broadcast>'
+            ip_server = '255.255.255.255'
             ip_client = ''
         else:
-            ip_client = '<broadcast>'
+            ip_client = '255.255.255.255'
             ip_server = ''
 
         addresses['server'][channel_name] = (ip_server, ports['server'][channel_name])
@@ -163,7 +163,7 @@ class TimeThread(SenderThread):
         return response_msg
 
     # def send(self, msg=None, address=None):
-    def send(self, msg=None, address='<broadcast>'):
+    def send(self, msg=None, address='255.255.255.255'):
         if msg is None:
             msg = self.get_response_msg()
 
@@ -373,23 +373,23 @@ class CmdThread(ListenerThread):
         msg_num_last = None
 
         while True:
-            time.sleep(1)
-            msg = '1'
-            UDP_PORT = 61070
-            # UDP_IP = "192.168.1.236"
-            UDP_IP = "255.255.255.255"
+            # time.sleep(1)
+            # msg = '1'
+            # UDP_PORT = 61070
+            # # UDP_IP = "192.168.1.236"
+            # UDP_IP = "255.255.255.255"
 
-            self.status_thread.send("4", (UDP_IP, UDP_PORT))
+            # self.status_thread.send("4", (UDP_IP, UDP_PORT))
             # print(i, time.time())
             # time.sleep(0.1)
-            # msg, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes
-            # msg = msg.decode()
+            msg, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes
+            msg = msg.decode()
             # print("received message:", msg)
             # print("sender:", addr)
             # sender_ip = addr[0]
             # response_address = (sender_ip, self.UDP_PORT_SEND)
 
-            continue
+            # continue
 
             msg_parts = msg.split(',')
             try:
