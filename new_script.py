@@ -10,13 +10,13 @@ if len(sys.argv) == 2:
 	UDP_IP = sys.argv[1]
 else:
 	# UDP_IP = '<broadcast>' #"192.168.1.182"
-	UDP_IP = '192.168.0.236' #"192.168.1.182"
+	UDP_IP = '192.168.1.236' #"192.168.1.182"
 UDP_PORT = 65110 #60411
 
 print("UDP target IP:", UDP_IP)
 print("UDP target port:", UDP_PORT)
 
-sock = socket.socket(socket.AF_INET, # Internet
+sock = socket.socket(socket.AF_INET, # Internets
                      socket.SOCK_DGRAM)#,
                      # socket.IPPROTO_UDP) # UDP
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
