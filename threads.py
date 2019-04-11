@@ -401,7 +401,8 @@ class CmdThread(ListenerThread):
             # TODO: add acknownledgement responses
             if msg_num == 1:  # Reset
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
-                self.acknowledgement_thread.send(ack_response_num + ',' + __version__)
+                for _ in range(3):
+                    self.acknowledgement_thread.send(ack_response_num + ',' + __version__)
 
                 if (measurements_thread is not None) and measurements_thread.is_alive():
                     self.stop_measurements(measurements_thread)
@@ -415,7 +416,8 @@ class CmdThread(ListenerThread):
                 state = 'idle'
             elif msg_num == 2:  # Start
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
-                self.acknowledgement_thread.send(ack_response_num)
+                for _ in range(3):
+                    self.acknowledgement_thread.send(ack_response_num)
 
                 if (measurements_thread is not None) and measurements_thread.is_alive():
                     self.stop_measurements(measurements_thread)
@@ -442,21 +444,24 @@ class CmdThread(ListenerThread):
                 print('I am measuring')
             elif msg_num == 3:  # Stop
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
-                self.acknowledgement_thread.send(ack_response_num)
+                for _ in range(3):
+                    self.acknowledgement_thread.send(ack_response_num)
 
                 self.stop_measurements(measurements_thread)
                 self.status_thread.periodic_sending = False
                 state = 'idle'
             elif msg_num == 4:  # Time sync
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
-                self.acknowledgement_thread.send(ack_response_num + ',0')
+                for _ in range(3):
+                    self.acknowledgement_thread.send(ack_response_num + ',0')
                 # print(self.acknowledgement_thread)
 
                 thread = Thread(target=self.time_sync, args=(time_sync_source, ))
                 thread.start()
             elif msg_num == 5:  # Time sync source
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
-                self.acknowledgement_thread.send(ack_response_num)
+                for _ in range(3):
+                    self.acknowledgement_thread.send(ack_response_num)
 
                 if len(msg_parts) >= 2:
                     new_time_sync_source = msg_parts[1]
@@ -466,20 +471,24 @@ class CmdThread(ListenerThread):
                         print('Fail to set the new time_sync_source')
             elif msg_num == 6:  # Start time sending
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
-                self.acknowledgement_thread.send(ack_response_num)
+                for _ in range(3):
+                    self.acknowledgement_thread.send(ack_response_num)
 
                 self.time_thread.periodic_sending = True
 
                 # Double check because of name
             elif msg_num == 7:  # State
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
-                self.acknowledgement_thread.send(ack_response_num + ',' + state)
+                for _ in range(3):
+                    self.acknowledgement_thread.send(ack_response_num + ',' + state)
             elif msg_num == 8:  # Send last measurement data
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
-                self.acknowledgement_thread.send(ack_response_num)
+                for _ in range(3):
+                    self.acknowledgement_thread.send(ack_response_num)
             elif msg_num == 9:
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
-                self.acknowledgement_thread.send(ack_response_num)
+                for _ in range(3):
+                    self.acknowledgement_thread.send(ack_response_num)
 
                 if len(msg_parts) != 3:
                     print('Incorrect number of parts: ' + str(len(msg_parts)))
