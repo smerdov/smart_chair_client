@@ -4,7 +4,8 @@ from collections import defaultdict
 from datetime import datetime
 import os
 import time
-from config import channels_dict, ip_server, ip_client, TIME_FORMAT, __version__
+# from config import channels_dict, ip_server, ip_client, TIME_FORMAT, __version__
+from config import channels_dict, TIME_FORMAT, __version__
 
 
 def get_server_client_ports(channel_id, sensor_id, player_id):
@@ -14,23 +15,36 @@ def get_server_client_ports(channel_id, sensor_id, player_id):
     return int(port_server), int(port_client)
 
 def get_socket(ip, port):
-    socket_receiver = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    # socket_receiver.bind((ip, port))
-    socket_receiver.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    new_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    new_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    new_socket.bind((ip, port))
 
-    return socket_receiver
+    return new_socket
 
-def get_ports_adresses_sockets(ip_server, ip_client, channels_dict, sensor_id, player_id,
+# def get_ports_adresses_sockets(ip_server, ip_client, channels_dict, sensor_id, player_id,
+#                                get_server_sockets=True, get_client_sockets=False):
+def get_ports_adresses_sockets(channels_dict, sensor_id, player_id,
                                get_server_sockets=True, get_client_sockets=False):
     ports = defaultdict(dict)
     addresses = defaultdict(dict)
     sockets = defaultdict(dict)
+    # TODO: change ip_server and ip_client to <broadcast> and ''
 
     for channel_name, channel_id in channels_dict.items():
         ports['server'][channel_name], ports['client'][channel_name] = get_server_client_ports(
             channel_id=channel_id,
             sensor_id=sensor_id,
             player_id=player_id)
+        # addresses['server'][channel_name] = (ip_server, ports['server'][channel_name])
+        # addresses['client'][channel_name] = (ip_client, ports['client'][channel_name])
+
+        if channel_name == 'cmd':
+            ip_server = '<broadcast>'
+            ip_client = ''
+        else:
+            ip_client = '<broadcast>'
+            ip_server = ''
+
         addresses['server'][channel_name] = (ip_server, ports['server'][channel_name])
         addresses['client'][channel_name] = (ip_client, ports['client'][channel_name])
 
