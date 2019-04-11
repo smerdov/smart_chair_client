@@ -52,7 +52,7 @@ if __name__ == '__main__':
 
     status_thread = StatusThread(
         # addresses['server']['status'],
-        '255.255.255.255',
+        addresses['client']['status'],
         sockets['client']['status'],
     )
     status_thread['version'] = __version__
@@ -62,15 +62,17 @@ if __name__ == '__main__':
     status_thread.start()
 
     time_thread = TimeThread(
-        '255.255.255.255',
+        # '255.255.255.255',
         # addresses['server']['time'],
+        addresses['client']['time'],
         sockets['client']['time'],
     )
     time_thread.start()
 
     acknowledgement_thread = AcknowledgementThread(
         # addresses['server']['ack'],
-        '255.255.255.255',
+        addresses['client']['ack'],
+        # '255.255.255.255',
         sockets['client']['ack'],
     )
     acknowledgement_thread.start()
