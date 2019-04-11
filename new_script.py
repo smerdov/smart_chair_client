@@ -9,9 +9,9 @@ import time
 if len(sys.argv) == 2:
 	UDP_IP = sys.argv[1]
 else:
-	# UDP_IP = '<broadcast>' #"192.168.1.182"
-	UDP_IP = '192.168.1.236' #"192.168.1.182"
-UDP_PORT = 65110 #60411
+	UDP_IP = '255.255.255.255>' #"192.168.1.182"
+	# UDP_IP = '192.168.1.236' #"192.168.1.182"
+UDP_PORT = 62070 #60411
 
 print("UDP target IP:", UDP_IP)
 print("UDP target port:", UDP_PORT)
