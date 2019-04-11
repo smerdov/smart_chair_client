@@ -450,6 +450,7 @@ class CmdThread(ListenerThread):
             elif msg_num == 4:  # Time sync
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
                 self.acknowledgement_thread.send(ack_response_num + ',0')
+                # print(self.acknowledgement_thread)
 
                 thread = Thread(target=self.time_sync, args=(time_sync_source, ))
                 thread.start()
@@ -473,11 +474,9 @@ class CmdThread(ListenerThread):
             elif msg_num == 7:  # State
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
                 self.acknowledgement_thread.send(ack_response_num + ',' + state)
-                pass
             elif msg_num == 8:  # Send last measurement data
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
                 self.acknowledgement_thread.send(ack_response_num)
-                pass
             elif msg_num == 9:
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
                 self.acknowledgement_thread.send(ack_response_num)
@@ -489,8 +488,7 @@ class CmdThread(ListenerThread):
                 ip_server_new = msg_parts[1]
                 player_id_new = msg_parts[2]
 
-                ports, addresses, sockets = get_ports_adresses_sockets(ip_server_new, ip_client, channels_dict, '07', player_id_new,
-                                                                       get_server_sockets=False, get_client_sockets=False)
+                ports, addresses, sockets = get_ports_adresses_sockets(channels_dict, '07', player_id_new, get_server_sockets=False, get_client_sockets=False)
 
                 self.status_thread.opponent_address = addresses['server']['status']
                 self.time_thread.opponent_address = addresses['server']['time']
