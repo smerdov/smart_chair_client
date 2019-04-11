@@ -17,7 +17,8 @@ def get_server_client_ports(channel_id, sensor_id, player_id):
 def get_socket(ip, port):
     new_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     new_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    new_socket.bind((ip, port))
+    if ip == '':
+        new_socket.bind((ip, port))
 
     return new_socket
 
@@ -161,7 +162,8 @@ class TimeThread(SenderThread):
 
         return response_msg
 
-    def send(self, msg=None, address=None):
+    # def send(self, msg=None, address=None):
+    def send(self, msg=None, address='<broadcast>'):
         if msg is None:
             msg = self.get_response_msg()
 
