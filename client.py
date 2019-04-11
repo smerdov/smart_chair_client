@@ -47,8 +47,7 @@ if __name__ == '__main__':
     wait = measurement_thread_kwargs['wait']
     time.sleep(wait)
 
-    ports, addresses, sockets = get_ports_adresses_sockets(ip_server=ip_server, ip_client=ip_client,
-                                                           channels_dict=channels_dict, sensor_id='07', player_id='0',
+    ports, addresses, sockets = get_ports_adresses_sockets(channels_dict=channels_dict, sensor_id='07', player_id='0',
                                                            get_server_sockets=False, get_client_sockets=True)
 
     status_thread = StatusThread(
