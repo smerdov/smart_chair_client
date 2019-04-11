@@ -94,7 +94,7 @@ class ListenerThread(SocketThread):
 
 class SenderThread(SocketThread):
 
-    def __init__(self, opponent_address, *args, period=1, **kwargs):
+    def __init__(self, opponent_address, *args, period=0.2, **kwargs):
         super().__init__(*args, **kwargs)
         self.opponent_address = opponent_address
         self.period = period
