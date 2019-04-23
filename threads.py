@@ -401,63 +401,65 @@ class CmdThread(ListenerThread):
             # TODO: add acknownledgement responses
             if msg_num == 1:  # Reset
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
-                for _ in range(3):
+                for _ in range(1):
                     self.acknowledgement_thread.send(ack_response_num + ',' + __version__)
 
-                if (measurements_thread is not None) and measurements_thread.is_alive():
-                    self.stop_measurements(measurements_thread)
-
-                measurements_thread = None
-                self.status_thread.periodic_sending = False
-                self.time_thread.periodic_sending = False
-                self.package_num = 0
-
-                time_sync_source = 'ntp1.stratum1.ru'
-                state = 'idle'
+                # if (measurements_thread is not None) and measurements_thread.is_alive():
+                #     self.stop_measurements(measurements_thread)
+                #
+                # measurements_thread = None
+                # self.status_thread.periodic_sending = False
+                # self.time_thread.periodic_sending = False
+                # self.package_num = 0
+                #
+                # time_sync_source = 'ntp1.stratum1.ru'
+                # state = 'idle'
             elif msg_num == 2:  # Start
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
-                for _ in range(3):
+                for _ in range(1):
+                    time.sleep(0.050)
                     self.acknowledgement_thread.send(ack_response_num)
 
-                if (measurements_thread is not None) and measurements_thread.is_alive():
-                    self.stop_measurements(measurements_thread)
-
-                measurements_thread = MeasurementsThread(
-                    self.sockets['client']['data'],  # It should be 'data' socket, right?  # Also should be simplified
-                    self.addresses['server']['data'],
-                    self.mpu9250,
-                    # **self.measurement_thread_kwargs,
-                    self.measurement_thread_kwargs,
-                    package_num=self.package_num,
-                )
-                # measurements_thread = self.get_measurements_thread(
-                #     socket=self.socket,
-                #     response_address=self.addresses['server']['data'],
-                #     mpu9250=self.mpu9250,
-                #     measurement_thread_kwargs=self.measurement_thread_kwargs,
+                # if (measurements_thread is not None) and measurements_thread.is_alive():
+                #     self.stop_measurements(measurements_thread)
+                #
+                # measurements_thread = MeasurementsThread(
+                #     self.sockets['client']['data'],  # It should be 'data' socket, right?  # Also should be simplified
+                #     self.addresses['server']['data'],
+                #     self.mpu9250,
+                #     # **self.measurement_thread_kwargs,
+                #     self.measurement_thread_kwargs,
+                #     package_num=self.package_num,
                 # )
-                # measurements_thread.stop = False
-                # measurements_thread = get_measurements_thread()
-                measurements_thread.start()
-                self.status_thread.periodic_sending = True
-                state = 'measuring'
-                print('I am measuring')
+                # # measurements_thread = self.get_measurements_thread(
+                # #     socket=self.socket,
+                # #     response_address=self.addresses['server']['data'],
+                # #     mpu9250=self.mpu9250,
+                # #     measurement_thread_kwargs=self.measurement_thread_kwargs,
+                # # )
+                # # measurements_thread.stop = False
+                # # measurements_thread = get_measurements_thread()
+                # measurements_thread.start()
+                # self.status_thread.periodic_sending = True
+                # state = 'measuring'
+                # print('I am measuring')
             elif msg_num == 3:  # Stop
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
-                for _ in range(3):
+                for _ in range(1):
+                    time.sleep(0.100)
                     self.acknowledgement_thread.send(ack_response_num)
 
-                self.stop_measurements(measurements_thread)
-                self.status_thread.periodic_sending = False
-                state = 'idle'
+                # self.stop_measurements(measurements_thread)
+                # self.status_thread.periodic_sending = False
+                # state = 'idle'
             elif msg_num == 4:  # Time sync
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
                 for _ in range(3):
                     self.acknowledgement_thread.send(ack_response_num + ',0')
-                # print(self.acknowledgement_thread)
-
-                thread = Thread(target=self.time_sync, args=(time_sync_source, ))
-                thread.start()
+                # # print(self.acknowledgement_thread)
+                #
+                # thread = Thread(target=self.time_sync, args=(time_sync_source, ))
+                # thread.start()
             elif msg_num == 5:  # Time sync source
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
                 for _ in range(3):
