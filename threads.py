@@ -40,11 +40,15 @@ def get_ports_adresses_sockets(channels_dict, sensor_id, player_id,
         # addresses['client'][channel_name] = (ip_client, ports['client'][channel_name])
 
         if channel_name == 'cmd':
-            ip_server = '255.255.255.255'
-            ip_client = ''
-        else:
-            ip_client = '255.255.255.255'
+            # ip_server = '255.255.255.255'
+            # ip_client = ''
             ip_server = ''
+            ip_client = '255.255.255.255'
+        else:
+            # ip_client = '255.255.255.255'
+            # ip_server = ''
+            ip_client = ''
+            ip_server = '255.255.255.255'
 
         addresses['server'][channel_name] = (ip_server, ports['server'][channel_name])
         addresses['client'][channel_name] = (ip_client, ports['client'][channel_name])
@@ -195,7 +199,8 @@ class MeasurementsThread(SocketThread):
         super().__init__(socket)# , **kwargs)
 
         self.socket = socket
-        self.response_address = response_address
+        # self.response_address = response_address
+        self.response_address = response_address  # TODO: WARNING
         self.mpu9250 = mpu9250
 
         self.timestep_detect = kwargs['timestep_detect']
@@ -360,10 +365,14 @@ class CmdThread(ListenerThread):
     #
     #     return measurements_thread
 
-    @staticmethod
-    def time_sync(time_sync_source):
+    # @staticmethod
+    def time_sync(self, time_sync_source):
         print('Synchronizing time')
-        os.system('sudo ntpdate ' + time_sync_source)
+        # os.system('sudo ntpdate ' + time_sync_source)
+        response = os.popen('sudo ntpdate ' + time_sync_source).read()
+        ### TODO: WHICH RESPONSE SHOULD BE SENT???
+
+        return response
 
     def run(self):
         measurements_thread = None
@@ -382,7 +391,7 @@ class CmdThread(ListenerThread):
             # self.status_thread.send("4", (UDP_IP, UDP_PORT))
             # print(i, time.time())
             # time.sleep(0.1)
-            msg, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes
+            msg, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes # чекнуть какой таймаут
             msg = msg.decode()
             # print("received message:", msg)
             # print("sender:", addr)
@@ -425,9 +434,8 @@ class CmdThread(ListenerThread):
 
                 measurements_thread = MeasurementsThread(
                     self.sockets['client']['data'],  # It should be 'data' socket, right?  # Also should be simplified
-                    self.addresses['server']['data'],
+                    self.addresses['server']['data'], # ('255.255.255.255', 63070),
                     self.mpu9250,
-                    # **self.measurement_thread_kwargs,
                     self.measurement_thread_kwargs,
                     package_num=self.package_num,
                 )
