@@ -50,10 +50,9 @@ if __name__ == '__main__':
     ports, addresses, sockets = get_ports_adresses_sockets(channels_dict=channels_dict, sensor_id='07', player_id='0',
                                                            get_server_sockets=False, get_client_sockets=True)
 
-
     status_thread = StatusThread(
-        # addresses['server']['status'], # #
-        ('255.255.255.255', 61070),
+        # addresses['server']['status'],
+        addresses['client']['status'],
         sockets['client']['status'],
     )
     status_thread['version'] = __version__
@@ -62,18 +61,20 @@ if __name__ == '__main__':
     status_thread['status'] = 'ok'
     status_thread.start()
 
-    print(sockets['client']['time'], sockets['client']['ack'])
-
     time_thread = TimeThread(
-        # addresses['server']['time'], #
+        # '255.255.255.255',
+        # addresses['server']['time'],
         ('255.255.255.255', 62070),
+        # addresses['client']['time'],
         sockets['client']['time'],
     )
     time_thread.start()
 
     acknowledgement_thread = AcknowledgementThread(
-        # addresses['server']['ack'], #
+        # addresses['server']['ack'],
+        # addresses['client']['ack'],
         ('255.255.255.255', 65070),
+        # '255.255.255.255',
         sockets['client']['ack'],
     )
     acknowledgement_thread.start()
@@ -94,17 +95,6 @@ if __name__ == '__main__':
     )
     cmd_thread.start()
     print('Client is started')
-
-
-
-### It's how to get cmd output:
-# x = os.popen('echo $PATH').read()
-
-
-
-
-
-
 
 
 

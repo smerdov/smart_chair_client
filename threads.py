@@ -15,7 +15,6 @@ def get_server_client_ports(channel_id, sensor_id, player_id):
     return int(port_server), int(port_client)
 
 def get_socket(ip, port):
-    print('Trying to create a socker with ip=' + str(ip) + ', port=' + str(port))
     new_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     new_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     if ip == '':
@@ -26,8 +25,7 @@ def get_socket(ip, port):
 # def get_ports_adresses_sockets(ip_server, ip_client, channels_dict, sensor_id, player_id,
 #                                get_server_sockets=True, get_client_sockets=False):
 def get_ports_adresses_sockets(channels_dict, sensor_id, player_id,
-                               get_server_sockets=True, get_client_sockets=False,
-                               ip_server=None):
+                               get_server_sockets=True, get_client_sockets=False):
     ports = defaultdict(dict)
     addresses = defaultdict(dict)
     sockets = defaultdict(dict)
@@ -44,25 +42,17 @@ def get_ports_adresses_sockets(channels_dict, sensor_id, player_id,
         if channel_name == 'cmd':
             ip_server = '255.255.255.255'
             ip_client = ''
-            # ip_server = ''
-            # ip_client = '255.255.255.255'
         else:
             ip_client = '255.255.255.255'
             ip_server = ''
-            # ip_client = ''
-            # ip_server = '255.255.255.255'
 
         addresses['server'][channel_name] = (ip_server, ports['server'][channel_name])
         addresses['client'][channel_name] = (ip_client, ports['client'][channel_name])
 
         if get_server_sockets:
-            if ip_server is not None:
-                sockets['server'][channel_name] = get_socket(ip_server, ports['server'][channel_name])  # TODO: ip_server is actually redefined
-            else:
-                print('ip_server is None. Please define it')
+            sockets['server'][channel_name] = get_socket(ip_server, ports['server'][channel_name])
 
         if get_client_sockets:
-            print(ports['client'][channel_name])
             sockets['client'][channel_name] = get_socket(ip_client, ports['client'][channel_name])
 
     return ports, addresses, sockets
@@ -371,14 +361,10 @@ class CmdThread(ListenerThread):
     #
     #     return measurements_thread
 
-    # @staticmethod
-    def time_sync(self, time_sync_source):
+    @staticmethod
+    def time_sync(time_sync_source):
         print('Synchronizing time')
-        # os.system('sudo ntpdate ' + time_sync_source)
-        response = os.popen('sudo ntpdate ' + time_sync_source).read()
-        ### TODO: WHICH RESPONSE SHOULD BE SENT???
-
-        return response
+        os.system('sudo ntpdate ' + time_sync_source)
 
     def run(self):
         measurements_thread = None
@@ -399,7 +385,7 @@ class CmdThread(ListenerThread):
             # time.sleep(0.1)
             msg, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes # чекнуть какой таймаут
             msg = msg.decode()
-            print("received message:", msg)
+            # print("received message:", msg)
             # print("sender:", addr)
             # sender_ip = addr[0]
             # response_address = (sender_ip, self.UDP_PORT_SEND)
@@ -440,8 +426,11 @@ class CmdThread(ListenerThread):
 
                 measurements_thread = MeasurementsThread(
                     self.sockets['client']['data'],  # It should be 'data' socket, right?  # Also should be simplified
-                    self.addresses['server']['data'], # ('255.255.255.255', 63070),
+                    ('255.255.255.255', 65070),
+                    # self.sockets['client']['data'],  # It should be 'data' socket, right?  # Also should be simplified
+                    # self.addresses['server']['data'],
                     self.mpu9250,
+                    # **self.measurement_thread_kwargs,
                     self.measurement_thread_kwargs,
                     package_num=self.package_num,
                 )
@@ -499,17 +488,6 @@ class CmdThread(ListenerThread):
                     self.acknowledgement_thread.send(ack_response_num + ',' + state)
             elif msg_num == 8:  # Send last measurement data
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
-
-                ip = msg_parts[1]
-                print('trying to send data to ip' + ip)
-
-
-
-
-
-
-
-
                 for _ in range(1):
                     self.acknowledgement_thread.send(ack_response_num)
             elif msg_num == 9:
