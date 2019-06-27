@@ -15,7 +15,7 @@ def get_server_client_ports(channel_id, sensor_id, player_id):
     return int(port_server), int(port_client)
 
 def get_socket(ip, port):
-    print('Trying to create a socker with ip=' + ip + 'port=' + port)
+    print(5'Trying to create a socker with ip=' + ip + 'port=' + port)
     new_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     new_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     if ip == '':
@@ -500,7 +500,7 @@ class CmdThread(ListenerThread):
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
 
                 ip = msg_parts[1]
-                print(f'trying to send data to ip {ip}')
+                print('trying to send data to ip' + ip)
 
 
 
