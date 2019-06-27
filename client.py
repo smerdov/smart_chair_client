@@ -62,6 +62,8 @@ if __name__ == '__main__':
     status_thread['status'] = 'ok'
     status_thread.start()
 
+    print(sockets['client']['time'], sockets['client']['ack'])
+
     time_thread = TimeThread(
         # addresses['server']['time'], #
         ('255.255.255.255', 62070),

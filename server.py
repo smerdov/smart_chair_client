@@ -22,6 +22,8 @@ if __name__ == '__main__':
         threads[channel_name].start()
 
     threads['cmd'] = SenderThread(addresses['client']['cmd'], sockets['server']['cmd'], name='cmd')
+    print(addresses['client']['cmd'])
+    print(sockets['server']['cmd'])
 
     while True:
         msg = input('Enter a command: ')

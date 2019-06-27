@@ -62,6 +62,7 @@ def get_ports_adresses_sockets(channels_dict, sensor_id, player_id,
                 print('ip_server is None. Please define it')
 
         if get_client_sockets:
+            print(ports['client'][channel_name])
             sockets['client'][channel_name] = get_socket(ip_client, ports['client'][channel_name])
 
     return ports, addresses, sockets
