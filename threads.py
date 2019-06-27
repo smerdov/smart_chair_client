@@ -15,7 +15,7 @@ def get_server_client_ports(channel_id, sensor_id, player_id):
     return int(port_server), int(port_client)
 
 def get_socket(ip, port):
-    print('Trying to create a socker with ip=' + str(ip) + 'port=' + str(port))
+    print('Trying to create a socker with ip=' + str(ip) + ', port=' + str(port))
     new_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     new_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     if ip == '':
@@ -42,15 +42,15 @@ def get_ports_adresses_sockets(channels_dict, sensor_id, player_id,
         # addresses['client'][channel_name] = (ip_client, ports['client'][channel_name])
 
         if channel_name == 'cmd':
-            # ip_server = '255.255.255.255'
-            # ip_client = ''
-            ip_server = ''
-            ip_client = '255.255.255.255'
-        else:
-            # ip_client = '255.255.255.255'
-            # ip_server = ''
-            ip_client = ''
             ip_server = '255.255.255.255'
+            ip_client = ''
+            # ip_server = ''
+            # ip_client = '255.255.255.255'
+        else:
+            ip_client = '255.255.255.255'
+            ip_server = ''
+            # ip_client = ''
+            # ip_server = '255.255.255.255'
 
         addresses['server'][channel_name] = (ip_server, ports['server'][channel_name])
         addresses['client'][channel_name] = (ip_client, ports['client'][channel_name])
