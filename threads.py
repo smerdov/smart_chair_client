@@ -502,19 +502,19 @@ class CmdThread(ListenerThread):
                 for _ in range(1):
                     self.acknowledgement_thread.send(ack_response_num)
 
-                ftp_ip = msg_parts[1]
-                # session_ftp = FTP('192.168.1.100', 'ADMIN', 'aaa')
-                session_ftp = FTP(ftp_ip, 'ADMIN', 'aaa')
-                # session.login('ADMIN', 'aaa')
-                if measurements_thread.folder is not None:
-                    # os.listdir()
-                    file = open('0.csv', 'rb')  # TODO: CURRENTLY SENDING ONLY THE FIRST FILE
-                    ftp_filename = 'schair_' + measurements_thread.folder + '.csv'
-                    session_ftp.storbinary(ftp_filename, file)  # send the file
-                    file.close()  # close file and FTP
-                    session_ftp.quit()
-                else:
-                    print('measurements_thread.folder is None. We need a file in a folder to send via FTP')
+                # ftp_ip = msg_parts[1]
+                # # session_ftp = FTP('192.168.1.100', 'ADMIN', 'aaa')
+                # session_ftp = FTP(ftp_ip, 'ADMIN', 'aaa')
+                # # session.login('ADMIN', 'aaa')
+                # if measurements_thread.folder is not None:
+                #     # os.listdir()
+                #     file = open('0.csv', 'rb')  # TODO: CURRENTLY SENDING ONLY THE FIRST FILE
+                #     ftp_filename = 'schair_' + measurements_thread.folder + '.csv'
+                #     session_ftp.storbinary(ftp_filename, file)  # send the file
+                #     file.close()  # close file and FTP
+                #     session_ftp.quit()
+                # else:
+                #     print('measurements_thread.folder is None. We need a file in a folder to send via FTP')
 
 
 
