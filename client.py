@@ -26,7 +26,7 @@ def parse_args():
     parser.add_argument('--timestep-send', type=float, default=30, help='Step between sending batches, s')  # Actually it has different meaning now
     parser.add_argument('--max-time', type=float, default=12 * 60 * 60, help='Maximum measurement time, s')  # 12 hours
     parser.add_argument('--verbose', type=int, default=0)
-    parser.add_argument('--send-data', type=bool, default=True, help='Whether to send data to server')
+    parser.add_argument('--send-data', type=bool, default=False, help='Whether to send data to server')
     parser.add_argument('--save-data', type=bool, default=True, help='Whether to save data locally')
     parser.add_argument('--label', type=str, default='')
     parser.add_argument('--meta', type=str, default='')
