@@ -47,16 +47,20 @@ def get_ports_adresses_sockets(channels_dict, sensor_id, player_id,
         #     ip_client = '255.255.255.255'
         #     ip_server = ''
 
-        ip_client = '255.255.255.255'
-        ip_server = '255.255.255.255'
-        addresses['server'][channel_name] = (ip_server, ports['server'][channel_name])
-        addresses['client'][channel_name] = (ip_client, ports['client'][channel_name])
+        # ip_client = '255.255.255.255'
+        # ip_server = '255.255.255.255'
+        # addresses['server'][channel_name] = (ip_server, ports['server'][channel_name])
+        # addresses['client'][channel_name] = (ip_client, ports['client'][channel_name])
+        addresses['server'][channel_name] = ('255.255.255.255', ports['server'][channel_name])
+        addresses['client'][channel_name] = ('255.255.255.255', ports['client'][channel_name])
 
         if get_server_sockets:
-            sockets['server'][channel_name] = get_socket(ip_server, ports['server'][channel_name])
+            # sockets['server'][channel_name] = get_socket(ip_server, ports['server'][channel_name])
+            sockets['server'][channel_name] = get_socket('', ports['server'][channel_name])
 
         if get_client_sockets:
-            sockets['client'][channel_name] = get_socket(ip_client, ports['client'][channel_name])
+            # sockets['client'][channel_name] = get_socket(ip_client, ports['client'][channel_name])
+            sockets['client'][channel_name] = get_socket('', ports['client'][channel_name])
 
     return ports, addresses, sockets
 

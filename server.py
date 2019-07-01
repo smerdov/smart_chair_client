@@ -11,7 +11,7 @@ from config import channels_dict, ip_server, ip_client, TIME_FORMAT, __version__
 
 
 if __name__ == '__main__':
-    ports, addresses, sockets = get_ports_adresses_sockets(ip_server=ip_server, ip_client=ip_client,
+    ports, addresses, sockets = get_ports_adresses_sockets(#ip_server=ip_server, ip_client=ip_client,
         channels_dict=channels_dict, sensor_id='07', player_id='0', get_server_sockets=True, get_client_sockets=False)
 
     threads = {}
