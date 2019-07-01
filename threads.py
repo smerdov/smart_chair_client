@@ -433,7 +433,8 @@ class CmdThread(ListenerThread):
 
                 measurements_thread = MeasurementsThread(
                     self.sockets['client']['data'],  # It should be 'data' socket, right?  # Also should be simplified
-                    ('255.255.255.255', 63070),
+                    self.addresses['server']['data'],
+                    # ('255.255.255.255', 63070),
                     # self.sockets['client']['data'],  # It should be 'data' socket, right?  # Also should be simplified
                     # self.addresses['server']['data'],
                     self.mpu9250,
