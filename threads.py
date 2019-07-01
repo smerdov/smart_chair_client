@@ -6,6 +6,7 @@ import os
 import time
 # from config import channels_dict, ip_server, ip_client, TIME_FORMAT, __version__
 from config import channels_dict, TIME_FORMAT, __version__
+from ftplib import FTP
 
 
 def get_server_client_ports(channel_id, sensor_id, player_id):
@@ -240,6 +241,8 @@ class MeasurementsThread(SocketThread):
             folder = datetime.now().strftime(TIME_FORMAT)[:-3]
         else:
             folder = self.folder
+
+        self.folder = folder  # FOR THE FTP
 
         # prefix = '../data/' + folder + '/'
         prefix = '/home/pi/data/' + folder + '/'
@@ -498,6 +501,23 @@ class CmdThread(ListenerThread):
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
                 for _ in range(1):
                     self.acknowledgement_thread.send(ack_response_num)
+
+                ftp_ip = msg_parts[1]
+                # session_ftp = FTP('192.168.1.100', 'ADMIN', 'aaa')
+                session_ftp = FTP(ftp_ip, 'ADMIN', 'aaa')
+                # session.login('ADMIN', 'aaa')
+                if measurements_thread.folder is not None:
+                    # os.listdir()
+                    file = open('0.csv', 'rb')  # TODO: CURRENTLY SENDING ONLY THE FIRST FILE
+                    ftp_filename = 'schair_' + measurements_thread.folder + '.csv'
+                    session_ftp.storbinary(ftp_filename, file)  # send the file
+                    file.close()  # close file and FTP
+                    session_ftp.quit()
+                else:
+                    print('measurements_thread.folder is None. We need a file in a folder to send via FTP')
+
+
+
             elif msg_num == 9:
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
                 for _ in range(1):

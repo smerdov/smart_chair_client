@@ -43,6 +43,7 @@ def parse_args():
 if __name__ == '__main__':
     mpu9250 = FaBo9Axis_MPU9250.MPU9250()
     measurement_thread_kwargs = parse_args()
+    print('measurement_thread_kwargs = ', measurement_thread_kwargs)
 
     wait = measurement_thread_kwargs['wait']
     time.sleep(wait)
