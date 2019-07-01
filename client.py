@@ -47,12 +47,13 @@ if __name__ == '__main__':
     wait = measurement_thread_kwargs['wait']
     time.sleep(wait)
 
-    ports, addresses, sockets = get_ports_adresses_sockets(channels_dict=channels_dict, sensor_id='07', player_id='1',
+    ports, addresses, sockets = get_ports_adresses_sockets(channels_dict=channels_dict, sensor_id='07', player_id='0',
                                                            get_server_sockets=False, get_client_sockets=True)
 
     status_thread = StatusThread(
         # addresses['server']['status'],
-        addresses['client']['status'],
+        # addresses['client']['status'],
+        ('192.168.1.100', 61070),
         sockets['client']['status'],
     )
     status_thread['version'] = __version__
@@ -64,7 +65,8 @@ if __name__ == '__main__':
     time_thread = TimeThread(
         # '255.255.255.255',
         # addresses['server']['time'],
-        ('255.255.255.255', 62070),
+        # ('255.255.255.255', 62070),
+        ('192.168.1.100', 62070),
         # addresses['client']['time'],
         sockets['client']['time'],
     )
@@ -73,7 +75,7 @@ if __name__ == '__main__':
     acknowledgement_thread = AcknowledgementThread(
         # addresses['server']['ack'],
         # addresses['client']['ack'],
-        ('255.255.255.255', 65070),
+        ('192.168.1.100', 65070),
         # '255.255.255.255',
         sockets['client']['ack'],
     )
