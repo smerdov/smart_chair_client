@@ -388,8 +388,8 @@ class CmdThread(ListenerThread):
             # time.sleep(0.1)
             msg, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes # чекнуть какой таймаут
             msg = msg.decode()
-            # print("received message:", msg)
-            # print("sender:", addr)
+            print("received message:", msg)
+            print("sender:", addr)
             # sender_ip = addr[0]
             # response_address = (sender_ip, self.UDP_PORT_SEND)
 
@@ -429,7 +429,7 @@ class CmdThread(ListenerThread):
 
                 measurements_thread = MeasurementsThread(
                     self.sockets['client']['data'],  # It should be 'data' socket, right?  # Also should be simplified
-                    ('255.255.255.255', 65070),
+                    ('255.255.255.255', 63070),
                     # self.sockets['client']['data'],  # It should be 'data' socket, right?  # Also should be simplified
                     # self.addresses['server']['data'],
                     self.mpu9250,
