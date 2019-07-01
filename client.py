@@ -64,7 +64,7 @@ if __name__ == '__main__':
     time_thread = TimeThread(
         # '255.255.255.255',
         # addresses['server']['time'],
-        opponent_address=('255.255.255.255', 62070),
+        ('255.255.255.255', 62070),
         # addresses['client']['time'],
         sockets['client']['time'],
     )
