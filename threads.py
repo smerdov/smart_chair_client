@@ -528,13 +528,14 @@ class CmdThread(ListenerThread):
                 # session.login('ADMIN', 'aaa')
                 if folder is not None:
                     # os.listdir()
-                    df_total = get_df_total(folder=folder)  # TODO: ENABLE IT
+                    full_path = '/home/pi/data/' + folder + '/'
+                    df_total = get_df_total(folder=full_path)  # TODO: ENABLE IT
                     # ### df to bytes
                     # rec = df_total.to_records(index=False)
                     # s = rec.tostring()
                     # ###
 
-                    file = open('/home/pi/data/' + folder + '/' + '0.csv', 'rb')  # TODO: CURRENTLY SENDING ONLY THE FIRST FILE
+                    file = open(full_path + '0.csv', 'rb')  # TODO: CURRENTLY SENDING ONLY THE FIRST FILE
                     # ftp_filename = 'schair_' + folder + '.csv'
                     # # session_ftp.storbinary(ftp_filename, file)  # send the file
                     # # session_ftp.storbinary('STOR %s' % os.path.basename(ftp_filename), file)  # send the file
