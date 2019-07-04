@@ -528,7 +528,7 @@ class CmdThread(ListenerThread):
                 # session.login('ADMIN', 'aaa')
                 if folder is not None:
                     # os.listdir()
-                    # get_df_total(folder=folder)  # TODO: ENABLE IT
+                    # df_total = get_df_total(folder=folder)  # TODO: ENABLE IT
                     file = open('/home/pi/data/' + folder + '/' + '0.csv', 'rb')  # TODO: CURRENTLY SENDING ONLY THE FIRST FILE
                     # ftp_filename = 'schair_' + folder + '.csv'
                     # # session_ftp.storbinary(ftp_filename, file)  # send the file
@@ -541,10 +541,11 @@ class CmdThread(ListenerThread):
                     ftp_command = 'STOR chair_' + file_prefix + '.csv'
                     print(ftp_command)
                     try:
+                        print('Transferring data via FTP...')
                         session_ftp.storbinary(ftp_command, file)  # send the file
                     except:
-                        print('I got an FTP error :', sys.exc_info()[0])
-
+                        print('I got an FTP error :', sys.exc_info())
+                        print('But probably that\'s ok')
 
                     file.close()  # close file and FTP
                     session_ftp.quit()
