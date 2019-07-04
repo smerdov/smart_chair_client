@@ -12,8 +12,8 @@ import sys
 
 def get_df_total(folder):
     filenames_list = os.listdir(folder)
-    filenames_list = sorted([int(x) for x in filenames_list])
-    filenames_list = [str(x) for x in filenames_list]
+    filenames_list = sorted([int(filename[:-4]) for filename in filenames_list if filename[-4:] == '.csv'])
+    filenames_list = [str(x) + '.csv' for x in filenames_list]
     df_total = None
 
     for filename in filenames_list:
