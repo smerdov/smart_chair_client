@@ -531,7 +531,7 @@ class CmdThread(ListenerThread):
                     ftp_filename = 'schair_' + folder + '.csv'
                     # session_ftp.storbinary(ftp_filename, file)  # send the file
                     # session_ftp.storbinary('STOR %s' % os.path.basename(ftp_filename), file)  # send the file
-                    session_ftp.storbinary('STOR chair_data.csv', file)  # send the file
+                    session_ftp.storbinary('STOR ~/chair_data.csv', file)  # send the file
                     file.close()  # close file and FTP
                     session_ftp.quit()
                 else:
