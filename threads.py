@@ -8,6 +8,7 @@ import time
 from config import channels_dict, TIME_FORMAT, __version__
 from ftplib import FTP
 import pandas as pd
+import sys
 
 def get_df_total(folder):
     filenames_list = os.listdir(folder)
@@ -539,7 +540,11 @@ class CmdThread(ListenerThread):
                     print('file_prefix is ', file_prefix)
                     ftp_command = 'STOR chair_' + file_prefix + '.csv'
                     print(ftp_command)
-                    session_ftp.storbinary(ftp_command, file)  # send the file
+                    try:
+                        session_ftp.storbinary(ftp_command, file)  # send the file
+                    except:
+                        print('I got an FTP error :', sys.exc_info()[0])
+
 
                     file.close()  # close file and FTP
                     session_ftp.quit()
