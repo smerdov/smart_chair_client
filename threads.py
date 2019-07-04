@@ -119,7 +119,7 @@ class ListenerThread(SocketThread):
 
 class SenderThread(SocketThread):
 
-    def __init__(self, opponent_address, *args, period=0.2, **kwargs):
+    def __init__(self, opponent_address, *args, period=0.5, **kwargs):
         super().__init__(*args, **kwargs)
         self.opponent_address = opponent_address
         self.period = period
@@ -437,7 +437,8 @@ class CmdThread(ListenerThread):
 
                 measurements_thread = None
                 self.status_thread.periodic_sending = False
-                self.time_thread.periodic_sending = False
+                self.time_thread.periodic_sending = True  # Changed to TRUE on 4 July
+                # self.time_thread.periodic_sending = False
                 self.package_num = 0
 
                 time_sync_source = 'ntp1.stratum1.ru'
