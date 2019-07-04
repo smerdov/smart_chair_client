@@ -531,8 +531,11 @@ class CmdThread(ListenerThread):
                     full_path = '/home/pi/data/' + folder + '/'
                     df_total = get_df_total(folder=full_path)  # TODO: ENABLE IT
                     ### df to bytes
-                    rec = df_total.to_records(index=False)
-                    file = rec.tostring()
+                    path2save = '/home/pi/tmp/current_df.csv'
+                    df_total.to_csv(path2save, index=False)
+                    file = open(path2save, 'rb')
+                    # rec = df_total.to_records(index=False)
+                    # file = rec.tostring()
                     ###
 
                     # file = open(full_path + '0.csv', 'rb')  # TODO: CURRENTLY SENDING ONLY THE FIRST FILE
