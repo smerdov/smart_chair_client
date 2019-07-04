@@ -527,7 +527,7 @@ class CmdThread(ListenerThread):
                 if folder is not None:
                     # os.listdir()
                     # get_df_total(folder=folder)  # TODO: ENABLE IT
-                    file = open('/home/pi/data/' + folder + '0.csv', 'rb')  # TODO: CURRENTLY SENDING ONLY THE FIRST FILE
+                    file = open('/home/pi/data/' + folder + '/' + '0.csv', 'rb')  # TODO: CURRENTLY SENDING ONLY THE FIRST FILE
                     ftp_filename = 'schair_' + folder + '.csv'
                     session_ftp.storbinary(ftp_filename, file)  # send the file
                     file.close()  # close file and FTP
