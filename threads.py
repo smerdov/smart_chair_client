@@ -522,12 +522,13 @@ class CmdThread(ListenerThread):
                 ftp_ip = msg_parts[1]
                 # session_ftp = FTP('192.168.1.100', 'ADMIN', 'aaa')
                 session_ftp = FTP(ftp_ip, '0', '0')
+                folder = measurements_thread.folder
                 # session.login('ADMIN', 'aaa')
-                if measurements_thread.folder is not None:
+                if folder is not None:
                     # os.listdir()
-                    # get_df_total(folder=measurements_thread.folder)  # TODO: ENABLE IT
-                    file = open('0.csv', 'rb')  # TODO: CURRENTLY SENDING ONLY THE FIRST FILE
-                    ftp_filename = 'schair_' + measurements_thread.folder + '.csv'
+                    # get_df_total(folder=folder)  # TODO: ENABLE IT
+                    file = open('/home/pi/data/' + folder + '0.csv', 'rb')  # TODO: CURRENTLY SENDING ONLY THE FIRST FILE
+                    ftp_filename = 'schair_' + folder + '.csv'
                     session_ftp.storbinary(ftp_filename, file)  # send the file
                     file.close()  # close file and FTP
                     session_ftp.quit()
