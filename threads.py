@@ -7,6 +7,22 @@ import time
 # from config import channels_dict, ip_server, ip_client, TIME_FORMAT, __version__
 from config import channels_dict, TIME_FORMAT, __version__
 from ftplib import FTP
+import pandas as pd
+
+def get_df_total(folder):
+    filenames_list = os.listdir(folder)
+    filenames_list = sorted([int(x) for x in filenames_list])
+    filenames_list = [str(x) for x in filenames_list]
+    df_total = None
+
+    for filename in filenames_list:
+        df = pd.read_csv(folder + '/' + filename)
+        if df_total is None:
+            df_total = df
+        else:
+            df_total = pd.concat([df_total, df], axis=0).reset_index(drop=True)
+
+    return df_total
 
 
 def get_server_client_ports(channel_id, sensor_id, player_id):
@@ -502,19 +518,21 @@ class CmdThread(ListenerThread):
                 for _ in range(1):
                     self.acknowledgement_thread.send(ack_response_num)
 
-                # ftp_ip = msg_parts[1]
-                # # session_ftp = FTP('192.168.1.100', 'ADMIN', 'aaa')
-                # session_ftp = FTP(ftp_ip, 'ADMIN', 'aaa')
-                # # session.login('ADMIN', 'aaa')
-                # if measurements_thread.folder is not None:
-                #     # os.listdir()
-                #     file = open('0.csv', 'rb')  # TODO: CURRENTLY SENDING ONLY THE FIRST FILE
-                #     ftp_filename = 'schair_' + measurements_thread.folder + '.csv'
-                #     session_ftp.storbinary(ftp_filename, file)  # send the file
-                #     file.close()  # close file and FTP
-                #     session_ftp.quit()
-                # else:
-                #     print('measurements_thread.folder is None. We need a file in a folder to send via FTP')
+                # TODO: add try/except
+                ftp_ip = msg_parts[1]
+                # session_ftp = FTP('192.168.1.100', 'ADMIN', 'aaa')
+                session_ftp = FTP(ftp_ip, '0', '0')
+                # session.login('ADMIN', 'aaa')
+                if measurements_thread.folder is not None:
+                    # os.listdir()
+                    # get_df_total(folder=measurements_thread.folder)  # TODO: ENABLE IT
+                    file = open('0.csv', 'rb')  # TODO: CURRENTLY SENDING ONLY THE FIRST FILE
+                    ftp_filename = 'schair_' + measurements_thread.folder + '.csv'
+                    session_ftp.storbinary(ftp_filename, file)  # send the file
+                    file.close()  # close file and FTP
+                    session_ftp.quit()
+                else:
+                    print('measurements_thread.folder is None. We need a file in a folder to send via FTP')
 
 
 
