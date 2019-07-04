@@ -519,19 +519,28 @@ class CmdThread(ListenerThread):
                     self.acknowledgement_thread.send(ack_response_num)
 
                 # TODO: add try/except
-                ftp_ip = msg_parts[1]
+                ftp_ip = msg_parts[1]  # ftp_ip = '192.168.1.100'
                 # session_ftp = FTP('192.168.1.100', 'ADMIN', 'aaa')
                 session_ftp = FTP(ftp_ip, '0', '0')
                 folder = measurements_thread.folder
+
                 # session.login('ADMIN', 'aaa')
                 if folder is not None:
                     # os.listdir()
                     # get_df_total(folder=folder)  # TODO: ENABLE IT
                     file = open('/home/pi/data/' + folder + '/' + '0.csv', 'rb')  # TODO: CURRENTLY SENDING ONLY THE FIRST FILE
-                    ftp_filename = 'schair_' + folder + '.csv'
-                    # session_ftp.storbinary(ftp_filename, file)  # send the file
-                    # session_ftp.storbinary('STOR %s' % os.path.basename(ftp_filename), file)  # send the file
-                    session_ftp.storbinary('STOR ~/chair_data.csv', file)  # send the file
+                    # ftp_filename = 'schair_' + folder + '.csv'
+                    # # session_ftp.storbinary(ftp_filename, file)  # send the file
+                    # # session_ftp.storbinary('STOR %s' % os.path.basename(ftp_filename), file)  # send the file
+                    # session_ftp.retrlines('LIST')
+                    # session_ftp.cwd('0')
+                    # session_ftp.storbinary('STOR ~/chair_data.csv', file)  # send the file
+                    file_prefix = folder[:19].replace(':', '-')
+                    print('file_prefix is ', file_prefix)
+                    ftp_command = 'STOR chair_' + file_prefix + '.csv'
+                    print(ftp_command)
+                    session_ftp.storbinary(ftp_command, file)  # send the file
+
                     file.close()  # close file and FTP
                     session_ftp.quit()
                 else:
