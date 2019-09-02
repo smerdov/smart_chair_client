@@ -62,6 +62,12 @@ if __name__ == '__main__':
     config = get_config()
     mpu9250 = FaBo9Axis_MPU9250.MPU9250()
     measurement_thread_kwargs = parse_args()
+    send_data = int(config['periodic_sending']) and int(config['periodic_sending_use_ftp'])
+    timestep_send = int(config['periodic_sending_period'])
+
+    measurement_thread_kwargs['send_data'] = send_data
+    measurement_thread_kwargs['timestep_send'] = timestep_send
+
     print('measurement_thread_kwargs = ', measurement_thread_kwargs)
 
     wait = measurement_thread_kwargs['wait']

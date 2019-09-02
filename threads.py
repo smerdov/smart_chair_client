@@ -365,8 +365,8 @@ class MeasurementsThread(SocketThread):
 
                 # data2send = str(self.package_num) + ',' + ','.join(measurement_data)  # New line character is not added
                 data2send = ','.join(measurement_data4server)  # New line character is not added
-                if self.send_data:  # TODO: DO
-                    self.socket.sendto(data2send.encode(), self.response_address)  # TODO: add number of row n
+                # if self.send_data:
+                #     self.socket.sendto(data2send.encode(), self.response_address)  # TODO: add number of row n
 
                 self.package_num += 1
 
@@ -381,7 +381,8 @@ class MeasurementsThread(SocketThread):
 
             ftp_filename = 'chair_' + first_datetime_in_batch + '.csv'
 
-            self.ftp_thread.send(filename, ftp_filename)  # ftp_filename should be the 'chair_' + the first date. consider using already implemented functions
+            if self.send_data:
+                self.ftp_thread.send(filename, ftp_filename)  # ftp_filename should be the 'chair_' + the first date. consider using already implemented functions
 
 
             if self.stop:
