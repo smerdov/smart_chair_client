@@ -11,6 +11,31 @@ import pandas as pd
 import sys
 
 
+def send_via_ftp(ftp_ip, login, password, path2file, ftp_filename):
+    file = open(path2file, 'rb')
+
+    session_ftp = FTP(ftp_ip, login, password)
+
+    # print('new file name is ', file_prefix + '.csv')
+
+    ### MAYBE FILE IS ALREADY ON THE SERVER
+    ftp_files = session_ftp.nlst()
+
+    if ftp_filename in ftp_files:
+        print('The file ' + ftp_filename + ' is already on the server. I\'m not gonna rewrite it.')
+    else:
+        ftp_command = 'STOR ' + ftp_filename
+        print(ftp_command)
+        try:
+            print('Transferring data via FTP...')
+            session_ftp.storbinary(ftp_command, file)  # send the file
+            print('I didn\'t got an FTP error')
+        except:
+            print('I got an FTP error :', sys.exc_info())
+            print('But probably that\'s ok')
+
+    file.close()
+    session_ftp.quit()
 
 def get_df_total(folder):
     filenames_list = os.listdir(folder)
@@ -318,7 +343,7 @@ class MeasurementsThread(SocketThread):
 
                 # data2send = str(self.package_num) + ',' + ','.join(measurement_data)  # New line character is not added
                 data2send = ','.join(measurement_data4server)  # New line character is not added
-                if self.send_data:
+                if self.send_data:  # TODO: DO
                     self.socket.sendto(data2send.encode(), self.response_address)  # TODO: add number of row n
 
                 self.package_num += 1
@@ -529,7 +554,7 @@ class CmdThread(ListenerThread):
                 # TODO: add try/except
                 ftp_ip = msg_parts[1]  # ftp_ip = '192.168.1.100'
                 # session_ftp = FTP('192.168.1.100', 'ADMIN', 'aaa')
-                session_ftp = FTP(ftp_ip, self.player_id, self.player_id)
+
                 folder = measurements_thread.folder
 
                 # session.login('ADMIN', 'aaa')
@@ -540,53 +565,11 @@ class CmdThread(ListenerThread):
                     ### df to bytes
                     path2save = '/home/pi/tmp/current_df.csv'
                     df_total.to_csv(path2save, index=False)
-                    file = open(path2save, 'rb')
-                    # rec = df_total.to_records(index=False)
-                    # file = rec.tostring()
-                    ###
 
-                    # file = open(full_path + '0.csv', 'rb')  # TODO: CURRENTLY SENDING ONLY THE FIRST FILE
-
-
-                    # ftp_filename = 'schair_' + folder + '.csv'
-                    # # session_ftp.storbinary(ftp_filename, file)  # send the file
-                    # # session_ftp.storbinary('STOR %s' % os.path.basename(ftp_filename), file)  # send the file
-                    # session_ftp.retrlines('LIST')
-                    # session_ftp.cwd('0')
-                    # session_ftp.storbinary('STOR ~/chair_data.csv', file)  # send the file
                     file_prefix = folder[:19].replace(':', '-')
-
-                    # ### THAT IS-ELSE CONSTRUCTION IS FOR THE CASE WHEN WE GET COMMAND 8 SEVERAL TIMES IN A ROW
-                    # if (self.last_ftp_file_prefix is None) or (self.last_ftp_file_prefix[:19] != file_prefix):
-                    #     self.last_ftp_file_prefix = file_prefix
-                    # else:
-                    #     file_prefix = file_prefix + '_'
-                    #     self.last_ftp_file_prefix = file_prefix
-
-                    # print('file_prefix is ', file_prefix)
-                    print('new file name is ', file_prefix + '.csv')
-
-                    ### MAYBE FILE IS ALREADY ON THE SERVER
-                    ftp_files = session_ftp.nlst()
-                    # print(ftp_files)
-
                     ftp_filename = 'chair__' + file_prefix + '.csv'
 
-                    if ftp_filename in ftp_files:
-                        print('The file ' + file_prefix + '.csv' + ' is already on the server. I\'m not gonna rewrite it.')
-                    else:
-                        ftp_command = 'STOR ' + ftp_filename
-                        print(ftp_command)
-                        try:
-                            print('Transferring data via FTP...')
-                            session_ftp.storbinary(ftp_command, file)  # send the file
-                            print('I didn\'t got an FTP error')
-                        except:
-                            print('I got an FTP error :', sys.exc_info())
-                            print('But probably that\'s ok')
-
-                        file.close()  # close file and FTP
-                        session_ftp.quit()
+                    send_via_ftp(ftp_ip, self.player_id, self.player_id, path2save, ftp_filename)
                 else:
                     print('measurements_thread.folder is None. We need a file in a folder to send via FTP')
 
