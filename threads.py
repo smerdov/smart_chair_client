@@ -563,6 +563,7 @@ class CmdThread(ListenerThread):
 
                     ### MAYBE FILE IS ALREADY ON THE SERVER
                     ftp_files = session_ftp.nlst()
+                    print(ftp_files)
                     if (file_prefix + '.csv') in ftp_files:
                         print('The file ' + file_prefix + '.csv' + ' is already on the server. I\'m not gonna rewrite it')
                     else:
