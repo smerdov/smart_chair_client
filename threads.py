@@ -366,6 +366,7 @@ class CmdThread(ListenerThread):
         self.measurement_thread_kwargs = measurement_thread_kwargs
         self.sockets = sockets
         self.package_num = 0  # For measurements_thread
+        self.last_ftp_file_prefix = None
 
     # @staticmethod
     def stop_measurements(self, measurements_thread):
@@ -549,6 +550,14 @@ class CmdThread(ListenerThread):
                     # session_ftp.cwd('0')
                     # session_ftp.storbinary('STOR ~/chair_data.csv', file)  # send the file
                     file_prefix = folder[:19].replace(':', '-')
+
+                    ### THAT IS-ELSE CONSTRUCTION IS FOR THE CASE WHEN WE GET COMMAND 8 SEVERAL TIMES IN A ROW
+                    if (self.last_ftp_file_prefix is None) or (self.last_ftp_file_prefix[:19] != file_prefix):
+                        self.last_ftp_file_prefix = file_prefix
+                    else:
+                        file_prefix = file_prefix + '_'
+                        self.last_ftp_file_prefix = file_prefix
+
                     print('file_prefix is ', file_prefix)
                     ftp_command = 'STOR chair_' + file_prefix + '.csv'
                     print(ftp_command)
