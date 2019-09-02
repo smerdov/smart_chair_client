@@ -558,7 +558,8 @@ class CmdThread(ListenerThread):
                     #     file_prefix = file_prefix + '_'
                     #     self.last_ftp_file_prefix = file_prefix
 
-                    print('file_prefix is ', file_prefix)
+                    # print('file_prefix is ', file_prefix)
+                    print('new file name is ', file_prefix + '.csv')
 
                     ### MAYBE FILE IS ALREADY ON THE SERVER
                     ftp_files = session_ftp.nlst()
