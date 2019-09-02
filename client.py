@@ -23,13 +23,13 @@ import pandas as pd
 def get_config():
     config = {}
 
-    with open('server.cfg') as file:
+    with open('/home/pi/smart_chair_client/server.cfg') as file:
         config['ip_server'] = file.readline()
 
-    with open('player.cfg') as file:
+    with open('/home/pi/smart_chair_client/player.cfg') as file:
         config['player_id'] = file.readline()
 
-    df_config = pd.read_csv('rt_en.cfg', header=None)
+    df_config = pd.read_csv('/home/pi/smart_chair_client/rt_en.cfg', header=None)
     config['periodic_sending'] = df_config.iloc[0, 0]
     config['periodic_sending_use_ftp'] = df_config.iloc[1, 0]
     config['periodic_sending_period'] = df_config.iloc[2, 0]
