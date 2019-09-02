@@ -379,7 +379,7 @@ class MeasurementsThread(SocketThread):
 
             file.close()
 
-            ftp_filename = 'chair_' + first_datetime_in_batch + '.csv'
+            ftp_filename = 'chair__' + first_datetime_in_batch + '.csv'
 
             if self.send_data:
                 self.ftp_thread.send(filename, ftp_filename)  # ftp_filename should be the 'chair_' + the first date. consider using already implemented functions
