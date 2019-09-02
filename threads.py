@@ -355,6 +355,7 @@ class CmdThread(ListenerThread):
                  acknowledgement_thread,
                  mpu9250,
                  measurement_thread_kwargs,
+                 player_id,
                  *args,
                  verbose=False,
                  sockets=None,
@@ -369,6 +370,7 @@ class CmdThread(ListenerThread):
         self.measurement_thread_kwargs = measurement_thread_kwargs
         self.sockets = sockets
         self.package_num = 0  # For measurements_thread
+        self.player_id = player_id
         # self.last_ftp_file_prefix = None
 
     # @staticmethod
@@ -527,7 +529,7 @@ class CmdThread(ListenerThread):
                 # TODO: add try/except
                 ftp_ip = msg_parts[1]  # ftp_ip = '192.168.1.100'
                 # session_ftp = FTP('192.168.1.100', 'ADMIN', 'aaa')
-                session_ftp = FTP(ftp_ip, '0', '0')
+                session_ftp = FTP(ftp_ip, self.player_id, self.player_id)
                 folder = measurements_thread.folder
 
                 # session.login('ADMIN', 'aaa')

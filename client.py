@@ -111,6 +111,7 @@ if __name__ == '__main__':
         acknowledgement_thread,
         mpu9250,
         measurement_thread_kwargs,
+        player_id=config['player_id'],
         # *args,
         verbose=False,
         sockets=sockets,
