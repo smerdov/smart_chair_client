@@ -11,10 +11,8 @@ import pandas as pd
 import sys
 
 
-def send_via_ftp(ftp_ip, login, password, path2file, ftp_filename):
+def send_via_ftp(session_ftp, path2file, ftp_filename):
     file = open(path2file, 'rb')
-
-    session_ftp = FTP(ftp_ip, login, password)
 
     # print('new file name is ', file_prefix + '.csv')
 
@@ -35,7 +33,7 @@ def send_via_ftp(ftp_ip, login, password, path2file, ftp_filename):
             print('But probably that\'s ok')
 
     file.close()
-    session_ftp.quit()
+
 
 def get_df_total(folder):
     filenames_list = os.listdir(folder)
@@ -110,6 +108,9 @@ def get_ports_adresses_sockets(channels_dict, sensor_id, player_id, ip_server,
 
     return ports, addresses, sockets
 
+def time_format2timefile_format(x):
+    return x[:19].replace(':', '-')
+
 
 class SocketThread(Thread):
 
@@ -143,6 +144,18 @@ class ListenerThread(SocketThread):
             if self.verbose:
                 print("received message:", msg)
                 print("sender:", addr)
+
+class FtpThread(Thread):
+
+    def __init__(self, ftp_ip, login, password):
+        super().__init__()
+        self.ftp_ip = ftp_ip
+        self.login = login
+        self.password = password
+        self.session_ftp = FTP(ftp_ip, login, password)
+
+    def send(self, path2file, ftp_filename):
+        send_via_ftp(self.session_ftp, path2file, ftp_filename)
 
 
 class SenderThread(SocketThread):
@@ -239,6 +252,7 @@ class MeasurementsThread(SocketThread):
                  socket,
                  response_address,
                  mpu9250,
+                 ftp_thread,
                  # *args,
                  kwargs,
                  package_num=0,
@@ -251,6 +265,7 @@ class MeasurementsThread(SocketThread):
         # self.response_address = response_address
         self.response_address = response_address  # TODO: WARNING
         self.mpu9250 = mpu9250
+        self.ftp_thread = ftp_thread
 
         self.timestep_detect = kwargs['timestep_detect']
         self.timestep_send = kwargs['timestep_send']
@@ -318,8 +333,15 @@ class MeasurementsThread(SocketThread):
                         print('data_gyroscope: ', data_gyroscope)
                         print('data_magnetometer: ', data_magnetometer)
 
+                datetime_current = datetime.now()
+                datetime_current_isoformat = datetime_current.isoformat()
+
+                if n_measurement == 0:
+                    first_datetime_in_batch = datetime_current.strftime(TIME_FORMAT)
+                    first_datetime_in_batch = time_format2timefile_format(first_datetime_in_batch)
+
                 measurement_data = [
-                    datetime.now().isoformat(),
+                    datetime_current_isoformat,
                     data_accelerometer['x'],
                     data_accelerometer['y'],
                     data_accelerometer['z'],
@@ -357,6 +379,11 @@ class MeasurementsThread(SocketThread):
 
             file.close()
 
+            ftp_filename = 'chair_' + first_datetime_in_batch + '.csv'
+
+            self.ftp_thread.send(filename, ftp_filename)  # ftp_filename should be the 'chair_' + the first date. consider using already implemented functions
+
+
             if self.stop:
                 break
 
@@ -380,6 +407,7 @@ class CmdThread(ListenerThread):
                  acknowledgement_thread,
                  mpu9250,
                  measurement_thread_kwargs,
+                 ftp_thread,
                  player_id,
                  *args,
                  verbose=False,
@@ -396,6 +424,7 @@ class CmdThread(ListenerThread):
         self.sockets = sockets
         self.package_num = 0  # For measurements_thread
         self.player_id = player_id
+        self.ftp_thread = ftp_thread
         # self.last_ftp_file_prefix = None
 
     # @staticmethod
@@ -490,6 +519,7 @@ class CmdThread(ListenerThread):
                     # self.sockets['client']['data'],  # It should be 'data' socket, right?  # Also should be simplified
                     # self.addresses['server']['data'],
                     self.mpu9250,
+                    self.ftp_thread,
                     # **self.measurement_thread_kwargs,
                     self.measurement_thread_kwargs,
                     package_num=self.package_num,
@@ -566,10 +596,13 @@ class CmdThread(ListenerThread):
                     path2save = '/home/pi/tmp/current_df.csv'
                     df_total.to_csv(path2save, index=False)
 
-                    file_prefix = folder[:19].replace(':', '-')
+                    # file_prefix = folder[:19].replace(':', '-')
+                    file_prefix = time_format2timefile_format(folder)
                     ftp_filename = 'chair__' + file_prefix + '.csv'
 
-                    send_via_ftp(ftp_ip, self.player_id, self.player_id, path2save, ftp_filename)
+                    session_ftp = FTP(ftp_ip, self.player_id, self.player_id)
+                    send_via_ftp(session_ftp, path2save, ftp_filename)
+                    session_ftp.quit()
                 else:
                     print('measurements_thread.folder is None. We need a file in a folder to send via FTP')
 

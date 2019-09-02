@@ -6,7 +6,7 @@ import time
 import argparse
 from threads import SenderThread, ListenerThread, get_server_client_ports, get_socket, get_ports_adresses_sockets
 from config import channels_dict, TIME_FORMAT, __version__
-from threads import StatusThread, TimeThread, AcknowledgementThread, MeasurementsThread, CmdThread
+from threads import StatusThread, TimeThread, AcknowledgementThread, MeasurementsThread, CmdThread, FtpThread
 import FaBo9Axis_MPU9250
 import pandas as pd
 
@@ -102,6 +102,9 @@ if __name__ == '__main__':
     )
     acknowledgement_thread.start()
 
+    ftp_thread = FtpThread(config['periodic_sending_ip'], config['player_id'], config['player_id'])
+    ftp_thread.start()
+
     cmd_thread = CmdThread(
         sockets['client']['cmd'],
         addresses,
@@ -111,6 +114,7 @@ if __name__ == '__main__':
         acknowledgement_thread,
         mpu9250,
         measurement_thread_kwargs,
+        ftp_thread,
         player_id=config['player_id'],
         # *args,
         verbose=False,
