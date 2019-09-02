@@ -10,26 +10,7 @@ from ftplib import FTP
 import pandas as pd
 import sys
 
-ip_server = None  # TODO: DO!
 
-def get_config():
-    config = {}
-
-    with open('server.cfg') as file:
-        config['ip_server'] = file.readline()
-
-    with open('player.cfg') as file:
-        config['player_id'] = file.readline()
-
-    df_config = pd.read_csv('rt_en.cfg', header=None)
-    config['periodic_sending'] = df_config.iloc[0, 0]
-    config['periodic_sending_use_ftp'] = df_config.iloc[1, 0]
-    config['periodic_sending_period'] = df_config.iloc[2, 0]
-    config['periodic_sending_ip'] = df_config.iloc[3, 0]
-
-    return config
-
-config = get_config()
 
 def get_df_total(folder):
     filenames_list = os.listdir(folder)
@@ -64,7 +45,7 @@ def get_socket(ip, port):
 
 # def get_ports_adresses_sockets(ip_server, ip_client, channels_dict, sensor_id, player_id,
 #                                get_server_sockets=True, get_client_sockets=False):
-def get_ports_adresses_sockets(channels_dict, sensor_id, player_id,
+def get_ports_adresses_sockets(channels_dict, sensor_id, player_id, ip_server,
                                get_server_sockets=True, get_client_sockets=False):
     ports = defaultdict(dict)
     addresses = defaultdict(dict)
@@ -90,7 +71,7 @@ def get_ports_adresses_sockets(channels_dict, sensor_id, player_id,
         # ip_server = '255.255.255.255'
         # addresses['server'][channel_name] = (ip_server, ports['server'][channel_name])
         # addresses['client'][channel_name] = (ip_client, ports['client'][channel_name])
-        addresses['server'][channel_name] = (config['ip_server'], ports['server'][channel_name])
+        addresses['server'][channel_name] = (ip_server, ports['server'][channel_name])
         # addresses['server'][channel_name] = ('255.255.255.255', ports['server'][channel_name])
         addresses['client'][channel_name] = ('255.255.255.255', ports['client'][channel_name])
 
@@ -621,7 +602,7 @@ class CmdThread(ListenerThread):
                 ip_server_new = msg_parts[1]
                 player_id_new = msg_parts[2]
 
-                ports, addresses, sockets = get_ports_adresses_sockets(channels_dict, '07', player_id_new, get_server_sockets=False, get_client_sockets=False)
+                ports, addresses, sockets = get_ports_adresses_sockets(channels_dict, '07', player_id_new, ip_server_new, get_server_sockets=False, get_client_sockets=False)
 
                 self.status_thread.opponent_address = addresses['server']['status']
                 self.time_thread.opponent_address = addresses['server']['time']

@@ -5,9 +5,10 @@ import os
 import time
 import argparse
 from threads import SenderThread, ListenerThread, get_server_client_ports, get_socket, get_ports_adresses_sockets
-from config import channels_dict, ip_server, ip_client, TIME_FORMAT, __version__
+from config import channels_dict, TIME_FORMAT, __version__
 from threads import StatusThread, TimeThread, AcknowledgementThread, MeasurementsThread, CmdThread
 import FaBo9Axis_MPU9250
+import pandas as pd
 
 # wd = os.getcwd()  # TODO: think about ip
 # if wd.startswith('/home'):  # It's RPI
@@ -18,6 +19,23 @@ import FaBo9Axis_MPU9250
 # # UDP_IP = "10.1.30.36"
 # # UDP_IP = "192.168.1.65"
 # # UDP_IP = "192.168.1.241"
+
+def get_config():
+    config = {}
+
+    with open('server.cfg') as file:
+        config['ip_server'] = file.readline()
+
+    with open('player.cfg') as file:
+        config['player_id'] = file.readline()
+
+    df_config = pd.read_csv('rt_en.cfg', header=None)
+    config['periodic_sending'] = df_config.iloc[0, 0]
+    config['periodic_sending_use_ftp'] = df_config.iloc[1, 0]
+    config['periodic_sending_period'] = df_config.iloc[2, 0]
+    config['periodic_sending_ip'] = df_config.iloc[3, 0]
+
+    return config
 
 
 def parse_args():
@@ -41,6 +59,7 @@ def parse_args():
 
 
 if __name__ == '__main__':
+    config = get_config()
     mpu9250 = FaBo9Axis_MPU9250.MPU9250()
     measurement_thread_kwargs = parse_args()
     print('measurement_thread_kwargs = ', measurement_thread_kwargs)
@@ -48,8 +67,9 @@ if __name__ == '__main__':
     wait = measurement_thread_kwargs['wait']
     time.sleep(wait)
 
-    ports, addresses, sockets = get_ports_adresses_sockets(channels_dict=channels_dict, sensor_id='07', player_id='0',
-                                                           get_server_sockets=False, get_client_sockets=True)
+    ports, addresses, sockets = get_ports_adresses_sockets(channels_dict=channels_dict, sensor_id='07',
+                            player_id=config['player_id'], ip_server=config['ip_server'], get_server_sockets=False,
+                            get_client_sockets=True)
 
     status_thread = StatusThread(
         addresses['server']['status'],

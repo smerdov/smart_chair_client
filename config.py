@@ -10,8 +10,8 @@ channels_dict = {
 
 ### Lab version
 # ip_server = '192.168.1.112'
-ip_server = '192.168.1.134'
-ip_client = '192.168.1.241'
+# ip_server = '192.168.1.134'
+# ip_client = '192.168.1.241'
 
 # ### Home version
 # ip_server = '192.168.43.154'
