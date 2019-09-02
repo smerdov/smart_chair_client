@@ -366,7 +366,7 @@ class CmdThread(ListenerThread):
         self.measurement_thread_kwargs = measurement_thread_kwargs
         self.sockets = sockets
         self.package_num = 0  # For measurements_thread
-        self.last_ftp_file_prefix = None
+        # self.last_ftp_file_prefix = None
 
     # @staticmethod
     def stop_measurements(self, measurements_thread):
@@ -551,26 +551,32 @@ class CmdThread(ListenerThread):
                     # session_ftp.storbinary('STOR ~/chair_data.csv', file)  # send the file
                     file_prefix = folder[:19].replace(':', '-')
 
-                    ### THAT IS-ELSE CONSTRUCTION IS FOR THE CASE WHEN WE GET COMMAND 8 SEVERAL TIMES IN A ROW
-                    if (self.last_ftp_file_prefix is None) or (self.last_ftp_file_prefix[:19] != file_prefix):
-                        self.last_ftp_file_prefix = file_prefix
-                    else:
-                        file_prefix = file_prefix + '_'
-                        self.last_ftp_file_prefix = file_prefix
+                    # ### THAT IS-ELSE CONSTRUCTION IS FOR THE CASE WHEN WE GET COMMAND 8 SEVERAL TIMES IN A ROW
+                    # if (self.last_ftp_file_prefix is None) or (self.last_ftp_file_prefix[:19] != file_prefix):
+                    #     self.last_ftp_file_prefix = file_prefix
+                    # else:
+                    #     file_prefix = file_prefix + '_'
+                    #     self.last_ftp_file_prefix = file_prefix
 
                     print('file_prefix is ', file_prefix)
-                    ftp_command = 'STOR chair_' + file_prefix + '.csv'
-                    print(ftp_command)
-                    try:
-                        print('Transferring data via FTP...')
-                        session_ftp.storbinary(ftp_command, file)  # send the file
-                        print('I didn\'t got an FTP error')
-                    except:
-                        print('I got an FTP error :', sys.exc_info())
-                        print('But probably that\'s ok')
 
-                    file.close()  # close file and FTP
-                    session_ftp.quit()
+                    ### MAYBE FILE IS ALREADY ON THE SERVER
+                    ftp_files = session_ftp.nlst()
+                    if file_prefix + '.csv' in ftp_files:
+                        print('The file ' + file_prefix + '.csv' + ' is already on the server. I\'m not gonna rewrite it')
+                    else:
+                        ftp_command = 'STOR chair_' + file_prefix + '.csv'
+                        print(ftp_command)
+                        try:
+                            print('Transferring data via FTP...')
+                            session_ftp.storbinary(ftp_command, file)  # send the file
+                            print('I didn\'t got an FTP error')
+                        except:
+                            print('I got an FTP error :', sys.exc_info())
+                            print('But probably that\'s ok')
+
+                        file.close()  # close file and FTP
+                        session_ftp.quit()
                 else:
                     print('measurements_thread.folder is None. We need a file in a folder to send via FTP')
 
