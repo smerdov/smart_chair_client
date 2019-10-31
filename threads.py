@@ -228,15 +228,15 @@ class TimeThread(SenderThread):
 
         return response_msg
 
-    # def send(self, msg=None, address=None):
-    def send(self, msg=None, address='255.255.255.255'):
-        if msg is None:
-            msg = self.get_response_msg()
-
-        if address is None:
-            address = self.opponent_address
-
-        self.socket.sendto(msg.encode(), address)
+    # # def send(self, msg=None, address=None):
+    # def send(self, msg=None, address='255.255.255.255'):  # Probably this broadcast address is not needed anymore
+    #     if msg is None:
+    #         msg = self.get_response_msg()
+    #
+    #     if address is None:
+    #         address = self.opponent_address
+    #
+    #     self.socket.sendto(msg.encode(), address)
 
 
 class AcknowledgementThread(SenderThread):
