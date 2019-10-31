@@ -421,6 +421,7 @@ class CmdThread(ListenerThread):
         self.addresses = addresses
         self.status_thread = status_thread
         self.time_thread = time_thread
+        self.time_thread.periodic_sending = True
         # self.measurements_thread = measurements_thread
         self.acknowledgement_thread = acknowledgement_thread
         self.mpu9250 = mpu9250
@@ -568,7 +569,7 @@ class CmdThread(ListenerThread):
                         time_sync_source = str(new_time_sync_source)
                     except:
                         print('Fail to set the new time_sync_source')
-            elif msg_num == 6:  # Start time sending
+            elif msg_num == 6:  # Start time sending  # Looks like it's deprecated now
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
                 for _ in range(1):
                     self.acknowledgement_thread.send(ack_response_num)
@@ -612,7 +613,7 @@ class CmdThread(ListenerThread):
 
 
 
-            elif msg_num == 9:
+            elif msg_num == 9:  # Looks like it's deprecated now
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
                 for _ in range(1):
                     self.acknowledgement_thread.send(ack_response_num)
