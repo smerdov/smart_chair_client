@@ -353,7 +353,10 @@ class MeasurementsThread(SocketThread):
                     data_magnetometer['z'],
                 ]
 
-                measurement_data = [str(value) for value in measurement_data]
+                # measurement_data = [str(value) for value in measurement_data]  # Commented on 31 Oct to fix rounding
+                for i in range(1, measurement_data):  # Rounding to exactly 3 digits
+                    measurement_data[i] = "%.3f" % measurement_data[i]
+
 
                 data2write = ','.join(measurement_data) + '\n'
                 file.write(data2write)
