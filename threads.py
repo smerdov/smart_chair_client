@@ -219,12 +219,13 @@ class StatusThread(SenderThread):
 
 
 class TimeThread(SenderThread):
+    TIME_THREAD_FORMAT = '%H:%M:%S.%f'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def get_response_msg(self):
-        response_msg = datetime.now().strftime(TIME_FORMAT)[:-3]
+        response_msg = datetime.now().strftime(self.TIME_THREAD_FORMAT)[:-3]
 
         return response_msg
 
