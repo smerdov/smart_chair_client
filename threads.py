@@ -345,7 +345,7 @@ class MeasurementsThread(SocketThread):
                 measurement_data = [
                     datetime_current_isoformat,
                     data_accelerometer['x'],
-		    data_accelerometer['y'],
+		            data_accelerometer['y'],
                     data_accelerometer['z'],
                     data_gyroscope['x'],
                     data_gyroscope['y'],
@@ -362,7 +362,7 @@ class MeasurementsThread(SocketThread):
                     ### That's why I added the code below
                     value_parts = measurement_data[i].split('.')
                     value_parts[1] = value_parts[1][:3]  # Cutting everything after the 3rd digit
-                    measurement_data[i] = '.'.join(value_parts)
+                    measurement_data[i] = '-'.join(value_parts)
                     # measurement_data[i] = "%.3f" % measurement_data[i]  # TODO: check in google why rounding isn't working
 
                 data2write = ','.join(measurement_data) + '\n'
