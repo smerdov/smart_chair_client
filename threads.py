@@ -358,7 +358,7 @@ class MeasurementsThread(SocketThread):
                 # measurement_data = [str(value) for value in measurement_data]  # Commented on 31 Oct to fix rounding
                 for i in range(1, len(measurement_data)):  # Rounding to exactly 3 digits
                     measurement_data[i] = "%.3f" % measurement_data[i]
-                    measurement_data[i] = "%.3f" % measurement_data[i]  # TODO: check in google why rounding isn't working
+                    # measurement_data[i] = "%.3f" % measurement_data[i]  # TODO: check in google why rounding isn't working
 
                 data2write = ','.join(measurement_data) + '\n'
                 file.write(data2write)
