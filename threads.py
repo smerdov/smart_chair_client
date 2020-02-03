@@ -289,6 +289,7 @@ class MeasurementsThread(SocketThread):
     def stop_measurements(self):
         self.stop = True
         print('Stopping')
+        # TODO: It loooks like here or nearby I need to create new folders
 
     @staticmethod
     def get_sleep_time(timestep_detect):
@@ -357,18 +358,19 @@ class MeasurementsThread(SocketThread):
                 # measurement_data = [str(value) for value in measurement_data]  # Commented on 31 Oct to fix rounding
                 for i in range(1, len(measurement_data)):  # Rounding to exactly 3 digits
                     measurement_data[i] = "%.3f" % measurement_data[i]
+                    measurement_data[i] = "%.3f" % measurement_data[i]  # TODO: check in google why rounding isn't working
 
 
                 data2write = ','.join(measurement_data) + '\n'
                 file.write(data2write)
 
-                measurement_data4server = [
-                    str(self.package_num),  # n
-                    measurement_data[0][:-3],  # microseconds are ignored
-                ] + measurement_data[1:]
-
-                # data2send = str(self.package_num) + ',' + ','.join(measurement_data)  # New line character is not added
-                data2send = ','.join(measurement_data4server)  # New line character is not added
+                # measurement_data4server = [
+                #     str(self.package_num),  # n
+                #     measurement_data[0][:-3],  # microseconds are ignored
+                # ] + measurement_data[1:]
+                #
+                # # data2send = str(self.package_num) + ',' + ','.join(measurement_data)  # New line character is not added
+                # data2send = ','.join(measurement_data4server)  # New line character is not added
                 # if self.send_data:
                 #     self.socket.sendto(data2send.encode(), self.response_address)  # TODO: add number of row n
 
@@ -461,6 +463,7 @@ class CmdThread(ListenerThread):
 
     def run(self):
         measurements_thread = None
+        measurements_threads_list = []
 
         time_sync_source = 'ntp1.stratum1.ru'
         state = 'idle'
@@ -541,6 +544,7 @@ class CmdThread(ListenerThread):
                 measurements_thread.start()
                 self.status_thread.periodic_sending = True
                 state = 'measuring'
+                measurements_threads_list.append(measurements_thread)
                 print('I am measuring')
             elif msg_num == 3:  # Stop
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
@@ -591,26 +595,27 @@ class CmdThread(ListenerThread):
                 ftp_ip = msg_parts[1]  # ftp_ip = '192.168.1.100'
                 # session_ftp = FTP('192.168.1.100', 'ADMIN', 'aaa')
 
-                folder = measurements_thread.folder
+                for measurements_thread_entity in measurements_threads_list:
+                    folder = measurements_thread_entity.folder
 
-                # session.login('ADMIN', 'aaa')
-                if folder is not None:
-                    # os.listdir()
-                    full_path = '/home/pi/data/' + folder + '/'
-                    df_total = get_df_total(folder=full_path)  # TODO: ENABLE IT
-                    ### df to bytes
-                    path2save = '/home/pi/tmp/current_df.csv'
-                    df_total.to_csv(path2save, index=False)
+                    # session.login('ADMIN', 'aaa')
+                    if folder is not None:
+                        # os.listdir()
+                        full_path = '/home/pi/data/' + folder + '/'
+                        df_total = get_df_total(folder=full_path)  # TODO: ENABLE IT
+                        ### df to bytes
+                        path2save = '/home/pi/tmp/current_df.csv'
+                        df_total.to_csv(path2save, index=False)
 
-                    # file_prefix = folder[:19].replace(':', '-')
-                    file_prefix = time_format2timefile_format(folder)
-                    ftp_filename = 'chair__' + file_prefix + '.csv'
+                        # file_prefix = folder[:19].replace(':', '-')
+                        file_prefix = time_format2timefile_format(folder)
+                        ftp_filename = 'chair__' + file_prefix + '.csv'
 
-                    session_ftp = FTP(ftp_ip, self.player_id, self.player_id)
-                    send_via_ftp(session_ftp, path2save, ftp_filename)
-                    session_ftp.quit()
-                else:
-                    print('measurements_thread.folder is None. We need a file in a folder to send via FTP')
+                        session_ftp = FTP(ftp_ip, self.player_id, self.player_id)
+                        send_via_ftp(session_ftp, path2save, ftp_filename)
+                        session_ftp.quit()
+                    else:
+                        print('measurements_thread_entity.folder is None. We need a file in a folder to send via FTP')
 
 
 
