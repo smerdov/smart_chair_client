@@ -42,7 +42,7 @@ def get_df_total(folder):
     df_total = None
 
     for filename in filenames_list:
-        df = pd.read_csv(folder + '/' + filename)
+        df = pd.read_csv(folder + '/' + filename, dtype=str)
         if df_total is None:
             df_total = df
         else:
@@ -358,12 +358,12 @@ class MeasurementsThread(SocketThread):
                 # measurement_data = [str(value) for value in measurement_data]  # Commented on 31 Oct to fix rounding
                 for i in range(1, len(measurement_data)):  # Rounding to exactly 3 digits
                     measurement_data[i] = "%.3f" % measurement_data[i]
-                    ### It looks like the trick above is not enough to round to exactly 3 digits.
-                    ### That's why I added the code below
-                    value_parts = measurement_data[i].split('.')
-                    value_parts[1] = value_parts[1][:3]  # Cutting everything after the 3rd digit
-                    measurement_data[i] = '-'.join(value_parts)
-                    # measurement_data[i] = "%.3f" % measurement_data[i]  # TODO: check in google why rounding isn't working
+                    # ### It looks like the trick above is not enough to round to exactly 3 digits.
+                    # ### That's why I added the code below
+                    # value_parts = measurement_data[i].split('.')
+                    # value_parts[1] = value_parts[1][:3]  # Cutting everything after the 3rd digit
+                    # measurement_data[i] = '.'.join(value_parts)
+                    # # measurement_data[i] = "%.3f" % measurement_data[i]  # TODO: check in google why rounding isn't working
 
                 data2write = ','.join(measurement_data) + '\n'
                 file.write(data2write)
