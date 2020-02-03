@@ -524,7 +524,8 @@ class CmdThread(ListenerThread):
                     self.acknowledgement_thread.send(ack_response_num)
 
                 if (measurements_thread is not None) and measurements_thread.is_alive():
-                    self.stop_measurements(measurements_thread)
+                    # self.stop_measurements(measurements_thread)  ### IMPORTANT COMMENT. UNCOMMENT IF YOU WANT A SEPARATE FILE FOR EACH START
+                    continue
 
                 measurements_thread = MeasurementsThread(
                     self.sockets['client']['data'],  # It should be 'data' socket, right?  # Also should be simplified
