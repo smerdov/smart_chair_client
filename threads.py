@@ -462,7 +462,8 @@ class CmdThread(ListenerThread):
 
     def run(self):
         measurements_thread = None
-        measurements_threads_list = []
+        measurements_threads_folders = []
+
 
         time_sync_source = 'ntp1.stratum1.ru'
         state = 'idle'
@@ -543,7 +544,7 @@ class CmdThread(ListenerThread):
                 measurements_thread.start()
                 self.status_thread.periodic_sending = True
                 state = 'measuring'
-                measurements_threads_list.append(measurements_thread)
+                measurements_threads_folders.append(measurements_thread.folder)
                 print('I am measuring')
             elif msg_num == 3:  # Stop
                 ack_response_num = str(msg_num) if msg_num != msg_num_last else '0'
@@ -594,8 +595,8 @@ class CmdThread(ListenerThread):
                 ftp_ip = msg_parts[1]  # ftp_ip = '192.168.1.100'
                 # session_ftp = FTP('192.168.1.100', 'ADMIN', 'aaa')
 
-                for measurements_thread_entity in measurements_threads_list:
-                    folder = measurements_thread_entity.folder
+                for measurements_threads_folder in measurements_threads_folders:
+                    folder = measurements_threads_folder
 
                     # session.login('ADMIN', 'aaa')
                     if folder is not None:
