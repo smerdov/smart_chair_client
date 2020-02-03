@@ -616,6 +616,8 @@ class CmdThread(ListenerThread):
                         session_ftp.quit()
                     else:
                         print('measurements_thread_entity.folder is None. We need a file in a folder to send via FTP')
+                else:
+                    measurements_threads_folders = []
 
 
 
