@@ -102,15 +102,16 @@ if __name__ == '__main__':
 
             measurement_data = [
                 datetime.now().isoformat(),
-                data_accelerometer['x'],
-                data_accelerometer['y'],
-                data_accelerometer['z'],
-                data_gyroscope['x'],
-                data_gyroscope['y'],
-                data_gyroscope['z'],
-                data_magnetometer['x'],
-                data_magnetometer['y'],
-                data_magnetometer['z'],
+                #round(data_accelerometer['x'], 3),
+                round(1.234,2),
+		round(data_accelerometer['y'], 3),
+                round(data_accelerometer['z'], 3),
+                round(data_gyroscope['x'], 3),
+                round(data_gyroscope['y'], 3),
+                round(data_gyroscope['z'], 3),
+                round(data_magnetometer['x'], 3),
+                round(data_magnetometer['y'], 3),
+                round(data_magnetometer['z'], 3)
             ]
 
             measurement_data = [str(value) for value in measurement_data]

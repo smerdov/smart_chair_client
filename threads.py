@@ -345,7 +345,7 @@ class MeasurementsThread(SocketThread):
                 measurement_data = [
                     datetime_current_isoformat,
                     data_accelerometer['x'],
-                    data_accelerometer['y'],
+		    data_accelerometer['y'],
                     data_accelerometer['z'],
                     data_gyroscope['x'],
                     data_gyroscope['y'],
@@ -357,9 +357,14 @@ class MeasurementsThread(SocketThread):
 
                 # measurement_data = [str(value) for value in measurement_data]  # Commented on 31 Oct to fix rounding
                 for i in range(1, len(measurement_data)):  # Rounding to exactly 3 digits
+<<<<<<< Updated upstream
                     measurement_data[i] = "%.3f" % measurement_data[i]
                     measurement_data[i] = "%.3f" % measurement_data[i]  # TODO: check in google why rounding isn't working
 
+=======
+                   #measurement_data[i] = "%.3f" % round(measurement_data[i], 3)
+                    measurement_data[i] = '{:.3f}'.format(measurement_data[i])
+>>>>>>> Stashed changes
 
                 data2write = ','.join(measurement_data) + '\n'
                 file.write(data2write)
